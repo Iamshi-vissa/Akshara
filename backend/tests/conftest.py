@@ -25,7 +25,9 @@ TEST_DB = os.environ.get(
     "AKSHARA_TEST_DATABASE_URL", "postgresql+asyncpg://akshara@localhost:5432/akshara_test"
 )
 TEST_REDIS = os.environ.get("AKSHARA_TEST_REDIS_URL", "redis://localhost:6379/15")
-TABLES = "audit_events, refresh_tokens, jobs, document_versions, documents, blobs, users"
+TABLES = (
+    "audit_events, refresh_tokens, jobs, render_pages, document_versions, documents, blobs, users"
+)
 
 
 @pytest.fixture(scope="session")
@@ -66,6 +68,7 @@ def settings(migrated_db: str, tmp_path: Path) -> Settings:
         max_upload_bytes=5 * 1024 * 1024,
         login_rate_limit_per_minute=1000,
         rate_limit_backend="memory",
+        job_mode="inline",
         log_level="WARNING",
     )
 
@@ -93,3 +96,11 @@ async def register_and_login(
     r = await client.post("/api/v1/auth/login", json={"email": email, "password": password})
     assert r.status_code == 200, r.text
     return {"Authorization": f"Bearer {r.json()['access_token']}"}
+
+
+@pytest.fixture(scope="session")
+def fixture_docs(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Path]:
+    """Real DOCX/PDF/PPTX files with known properties (tests/fixtures/builders.py)."""
+    from tests.fixtures.builders import build_all
+
+    return build_all(tmp_path_factory.mktemp("fixture-docs"))

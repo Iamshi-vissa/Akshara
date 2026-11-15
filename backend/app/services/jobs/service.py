@@ -1,12 +1,9 @@
-"""Background job tracking.
-
-Phase 1 provides the job table and read API. The first jobs (parse and render) are created in
-Phase 2; until then the list is honestly empty.
-"""
+"""Background job tracking and dispatch."""
 
 from __future__ import annotations
 
 import uuid
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,3 +31,25 @@ class JobService:
         if job is None:
             raise NotFoundError("Job not found.", code="JOB_NOT_FOUND")
         return job
+
+
+async def create_job(
+    session: AsyncSession,
+    owner_id: uuid.UUID,
+    job_type: str,
+    *,
+    subject_type: str | None = None,
+    subject_id: uuid.UUID | None = None,
+    params: dict[str, Any] | None = None,
+) -> Job:
+    job = Job(
+        owner_id=owner_id,
+        type=job_type,
+        status="queued",
+        subject_type=subject_type,
+        subject_id=subject_id,
+        params=params or {},
+    )
+    session.add(job)
+    await session.flush()
+    return job

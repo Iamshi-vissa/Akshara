@@ -85,6 +85,14 @@ class DocumentVersion(UUIDPk, Base):
     )
     adm_blob: Mapped[str | None] = mapped_column(ForeignKey("blobs.sha256", ondelete="RESTRICT"))
     adm_schema_version: Mapped[str | None] = mapped_column(String(16))
+    layout_blob: Mapped[str | None] = mapped_column(ForeignKey("blobs.sha256", ondelete="RESTRICT"))
+    render_pdf_blob: Mapped[str | None] = mapped_column(
+        ForeignKey("blobs.sha256", ondelete="RESTRICT")
+    )
+    analysis_status: Mapped[str] = mapped_column(
+        String(16), default="pending", server_default="pending", nullable=False
+    )
+    analysis_error: Mapped[str | None] = mapped_column(Text)
     created_by: Mapped[str] = mapped_column(String(16), nullable=False)
     summary: Mapped[dict[str, Any]] = mapped_column(
         JSONB, default=dict, server_default="{}", nullable=False
@@ -92,3 +100,21 @@ class DocumentVersion(UUIDPk, Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class RenderPage(UUIDPk, Base):
+    """One rendered page (or slide) of a version: preview image + geometry summary."""
+
+    __tablename__ = "render_pages"
+    __table_args__ = (UniqueConstraint("version_id", "page_index", name="uq_render_pages_page"),)
+
+    version_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("document_versions.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    page_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    width_pt: Mapped[float] = mapped_column(nullable=False)
+    height_pt: Mapped[float] = mapped_column(nullable=False)
+    image_blob: Mapped[str] = mapped_column(
+        ForeignKey("blobs.sha256", ondelete="RESTRICT"), nullable=False
+    )
+    blank: Mapped[bool] = mapped_column(default=False, nullable=False)

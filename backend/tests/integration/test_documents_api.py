@@ -44,7 +44,8 @@ async def test_upload_list_get_download_byte_identical(client: httpx.AsyncClient
         v = doc["current_version"]
         assert v["number"] == 1 and v["created_by"] == "upload"
         assert v["sha256"] == hashlib.sha256(data).hexdigest()
-        assert v["summary"]["analysis"] == "not_available"  # honest: parsing is Phase 2
+        # These are minimal synthetic packages: analysis runs and reports what it could read.
+        assert v["analysis_status"] in ("complete", "failed")
 
         dl = await client.get(f"/api/v1/versions/{v['id']}/file", headers=headers)
         assert dl.status_code == 200
@@ -157,7 +158,8 @@ async def test_identical_uploads_share_one_blob(client: httpx.AsyncClient, setti
     assert a["current_version"]["sha256"] == b["current_version"]["sha256"]
     engine = create_async_engine(settings.database_url)
     async with engine.connect() as conn:
-        assert (await conn.execute(text("select count(*) from blobs"))).scalar_one() == 1
+        q = "select count(distinct source_blob) from document_versions"
+        assert (await conn.execute(text(q))).scalar_one() == 1
     await engine.dispose()
 
 
@@ -215,6 +217,7 @@ async def test_audit_trail_records_actions(client: httpx.AsyncClient, settings) 
         "auth.register",
         "auth.login",
         "document.uploaded",
+        "document.analysis_requested",
         "document.downloaded",
         "document.upload_rejected",
     ]

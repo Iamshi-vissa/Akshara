@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     login_rate_limit_per_minute: int = 10
     rate_limit_backend: Literal["redis", "memory"] = "redis"
 
+    # --- Background jobs ----------------------------------------------------------------
+    # "celery": dispatched to workers (production). "inline": run inside the request
+    # (tests and single-process development). Same job code either way.
+    job_mode: Literal["celery", "inline"] = "celery"
+
     # --- Storage -----------------------------------------------------------------------
     storage_backend: Literal["local"] = "local"
     storage_root: Path = Path("./var/blobs")

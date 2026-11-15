@@ -4,6 +4,12 @@
 # Behind a TLS-intercepting proxy, pass its CA without baking it into the image:
 #   docker build --secret id=extra_ca,src=/path/to/ca.pem ...
 FROM python:3.13-slim
+# LibreOffice renders DOCX/PPTX pages (Phase 2+). Metric-compatible and Noto fonts reduce
+# rendering differences from Microsoft Office (ARCHITECTURE.md §10 R3, R14).
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libreoffice-writer-nogui libreoffice-impress-nogui \
+      fonts-liberation fonts-crosextra-carlito fonts-crosextra-caladea fonts-noto-core \
+ && rm -rf /var/lib/apt/lists/*
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 WORKDIR /app
 

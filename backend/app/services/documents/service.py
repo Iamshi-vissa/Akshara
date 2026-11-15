@@ -113,8 +113,7 @@ class DocumentService:
             number=1,
             source_blob=stored.sha256,
             created_by="upload",
-            # Parsing into the canonical model arrives in Phase 2; record that honestly.
-            summary={"analysis": "not_available", "reason": "Document analysis ships in Phase 2."},
+            summary={"analysis": "pending"},
         )
         self.session.add(document)
         await self.session.flush()

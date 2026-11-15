@@ -19,6 +19,10 @@ dependencies = [
     "celery[redis]>=5.4",
     "packaging>=24",  # kombu's Redis transport imports it but does not declare it
     "redis>=5.2",
+    "python-docx>=1.2.0",
+    "python-pptx>=1.0.2",
+    "pymupdf>=2.1",
+    "httpx>=0.28.1",
 ]
 
 [dependency-groups]
@@ -56,7 +60,7 @@ select = ["E", "F", "I", "B", "UP", "S", "ASYNC", "RUF"]
 ignore = ["S101", "B008", "RUF012"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S105", "S106", "S107", "S108", "S311", "S603"]
+"tests/**" = ["S105", "S106", "S107", "S108", "S311", "S603", "ASYNC240", "E501"]
 "migrations/**" = ["E501"]
 
 [tool.mypy]
@@ -64,6 +68,11 @@ python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# PyMuPDF ships without type hints for most of its API.
+module = ["app.adapters.formats.pdf_importer", "app.adapters.render.*", "app.domain.visual.*"]
+disallow_untyped_calls = false
 
 [[tool.mypy.overrides]]
 module = "tests.*"

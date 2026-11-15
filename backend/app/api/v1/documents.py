@@ -15,13 +15,22 @@ from app.api.deps import (
     CurrentUser,
     LimitsDep,
     SessionDep,
+    StateDep,
     StorageDep,
     parse_uuid,
 )
 from app.core.errors import AppError, FileTooLargeError
 from app.schemas.common import Page
-from app.schemas.documents import DocumentOut, DocumentStats, DocumentUpdate, VersionOut
+from app.schemas.documents import (
+    DocumentOut,
+    DocumentStats,
+    DocumentUpdate,
+    UploadOut,
+    VersionOut,
+)
 from app.services.documents.service import DocumentService, DocumentView, VersionView
+from app.services.jobs.dispatch import dispatch
+from app.services.versions import VersionService
 
 router = APIRouter(tags=["documents"])
 
@@ -36,6 +45,8 @@ def version_out(view: VersionView) -> VersionOut:
         number=v.number,
         parent_version_id=v.parent_version_id,
         created_by=v.created_by,
+        analysis_status=v.analysis_status,
+        analysis_error=v.analysis_error,
         size_bytes=b.size_bytes,
         sha256=b.sha256,
         summary=v.summary,
@@ -78,9 +89,10 @@ async def _spool(upload: UploadFile, max_bytes: int) -> Path:
     return Path(name)
 
 
-@router.post("/documents", response_model=DocumentOut, status_code=status.HTTP_201_CREATED)
+@router.post("/documents", response_model=UploadOut, status_code=status.HTTP_201_CREATED)
 async def upload_document(
     request: Request,
+    state: StateDep,
     user: CurrentUser,
     session: SessionDep,
     storage: StorageDep,
@@ -103,7 +115,16 @@ async def upload_document(
         )
     finally:
         temp.unlink(missing_ok=True)
-    return document_out(view)
+    # Start analysis (parse + render) in the background.
+    assert view.current is not None
+    job = await VersionService(session, storage).request_analysis(user.id, view.current.version.id)
+    job_id = job.id
+    await dispatch(state.settings, state.sessionmaker, state.storage, job_id)
+    if state.settings.job_mode == "inline":
+        owner_id, document_id = user.id, view.document.id
+        session.expire_all()  # the job committed through other sessions
+        view = await DocumentService(session, storage, limits).get(owner_id, document_id)
+    return UploadOut(**document_out(view).model_dump(), job_id=job_id)
 
 
 @router.get("/documents", response_model=Page[DocumentOut])

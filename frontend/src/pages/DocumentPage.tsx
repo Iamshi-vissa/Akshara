@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { useState, type ReactNode } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api, ApiError, downloadVersion, json, type DocumentOut, type VersionOut } from '@/api/client';
@@ -7,9 +7,11 @@ import { Badge, KindBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Icon } from '@/components/ui/Icon';
+import { Tabs, type TabDef } from '@/components/ui/Tabs';
+import { AnalysisStatus, PreviewPanel, SummaryStats } from '@/features/workspace/AnalysisPanel';
 import { describeWarning, formatBytes, formatDate } from '@/lib/format';
 
-function Meta({ label, children }: { label: string; children: React.ReactNode }) {
+function Meta({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:gap-6">
       <dt className="label w-36 shrink-0">{label}</dt>
@@ -18,17 +20,33 @@ function Meta({ label, children }: { label: string; children: React.ReactNode })
   );
 }
 
-export function DocumentPage() {
+const RUNNING = new Set(['pending', 'processing']);
+
+/**
+ * Extra workspace tabs registered by later phases (inspection, compliance, changes...).
+ * Each receives the document and its current version.
+ */
+export interface WorkspaceTab extends TabDef {
+  render: (doc: DocumentOut, version: VersionOut) => ReactNode;
+}
+
+export function DocumentPage({ extraTabs = [] }: { extraTabs?: WorkspaceTab[] }) {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [params, setParams] = useSearchParams();
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
-  const doc = useQuery({ queryKey: ['documents', id], queryFn: () => api<DocumentOut>(`/documents/${id}`) });
+  const doc = useQuery({
+    queryKey: ['documents', id],
+    queryFn: () => api<DocumentOut>(`/documents/${id}`),
+    // Poll while the background analysis runs.
+    refetchInterval: (q) => (RUNNING.has(q.state.data?.current_version?.analysis_status ?? '') ? 1500 : false),
+  });
   const versions = useQuery({
-    queryKey: ['documents', id, 'versions'],
+    queryKey: ['documents', id, 'versions', doc.data?.current_version?.id],
     queryFn: () => api<VersionOut[]>(`/documents/${id}/versions`),
     enabled: doc.isSuccess,
   });
@@ -48,6 +66,10 @@ export function DocumentPage() {
       navigate('/documents');
     },
   });
+  const reanalyse = useMutation({
+    mutationFn: (versionId: string) => api(`/versions/${versionId}/analyse`, { method: 'POST' }),
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ['documents', id] }),
+  });
 
   async function download(v: VersionOut, name: string) {
     setDownloadError(null);
@@ -58,7 +80,7 @@ export function DocumentPage() {
     }
   }
 
-  if (doc.isPending) return <div className="surface mx-auto h-96 max-w-5xl animate-pulse" />;
+  if (doc.isPending) return <div className="surface mx-auto h-96 max-w-6xl animate-pulse" />;
   if (doc.isError) {
     const notFound = doc.error instanceof ApiError && doc.error.status === 404;
     return (
@@ -72,16 +94,34 @@ export function DocumentPage() {
 
   const d = doc.data;
   const v = d.current_version;
+  const tabs: WorkspaceTab[] = v
+    ? [
+        { key: 'preview', label: d.kind === 'pptx' ? 'Slides' : 'Preview', render: () => null },
+        ...extraTabs,
+        { key: 'details', label: 'Details & versions', render: () => null },
+      ]
+    : [];
+  const activeKey = params.get('tab') ?? 'preview';
+  const active = tabs.find((t) => t.key === activeKey) ?? tabs[0];
+  const page = Number(params.get('page') ?? 0);
+  const setTab = (key: string) => setParams((p) => {
+    p.set('tab', key);
+    return p;
+  }, { replace: true });
+  const setPage = (n: number) => setParams((p) => {
+    p.set('page', String(n));
+    return p;
+  }, { replace: true });
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="mx-auto max-w-6xl space-y-6">
       <Link to="/documents" className="inline-flex items-center gap-2 text-sm text-paper-faint hover:text-paper">
         <Icon name="back" /> Library
       </Link>
 
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="mb-3 flex items-center gap-2">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
             <KindBadge kind={d.kind} />
             <Badge tone="accent">v{v?.number ?? 1}</Badge>
             <Badge tone="ok">
@@ -97,14 +137,8 @@ export function DocumentPage() {
                 if (title) rename.mutate(title);
               }}
             >
-              <input
-                name="title"
-                defaultValue={d.title}
-                maxLength={300}
-                autoFocus
-                aria-label="Document title"
-                className="h-11 min-w-0 flex-1 rounded-lg border border-accent bg-ink-900 px-3 font-serif text-2xl outline-none"
-              />
+              <input name="title" defaultValue={d.title} maxLength={300} autoFocus aria-label="Document title"
+                className="h-11 min-w-0 flex-1 rounded-lg border border-accent bg-ink-900 px-3 font-serif text-2xl outline-none" />
               <Button type="submit" loading={rename.isPending}>Save</Button>
               <Button type="button" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
             </form>
@@ -121,7 +155,7 @@ export function DocumentPage() {
         <div className="flex gap-2">
           {v && (
             <Button onClick={() => void download(v, d.original_filename)}>
-              <Icon name="download" /> Download original
+              <Icon name="download" /> Download
             </Button>
           )}
           <Button variant="danger" onClick={() => setConfirmDelete(true)} aria-label="Delete document">
@@ -145,57 +179,65 @@ export function DocumentPage() {
         </section>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <section className="surface px-6 py-3" aria-label="File details">
-          <dl className="divide-y divide-ink-700/70">
-            <Meta label="Original name">{d.original_filename}</Meta>
-            <Meta label="Size">{v ? formatBytes(v.size_bytes) : '—'}</Meta>
-            <Meta label="Uploaded">{formatDate(d.created_at)}</Meta>
-            <Meta label="SHA-256">
-              <code className="block font-mono text-xs break-all text-paper-dim">{v?.sha256}</code>
-            </Meta>
-          </dl>
-        </section>
+      {v && v.analysis_status === 'complete' && <SummaryStats summary={v.summary} kind={d.kind} />}
+      {v && v.analysis_status !== 'complete' && <AnalysisStatus version={v} />}
 
-        <section className="surface p-6" aria-labelledby="analysis-h">
-          <h2 id="analysis-h" className="font-serif text-lg font-semibold">Analysis</h2>
-          <p className="mt-2 text-sm leading-relaxed text-paper-dim">
-            Structure, preview and inspection are not run yet. Parsing into AKSHARA&apos;s canonical document model arrives in
-            Phase 2, and inspection in Phase 3.
-          </p>
-          <Badge>Not analysed</Badge>
-        </section>
-      </div>
-
-      <section aria-labelledby="versions-h">
-        <h2 id="versions-h" className="mb-4 flex items-center gap-2 font-serif text-2xl font-semibold">
-          <Icon name="history" className="size-5 text-gold" /> Version history
-        </h2>
-        <ol className="surface divide-y divide-ink-700/70">
-          {(versions.data ?? []).map((ver) => (
-            <li key={ver.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
-              <span className="grid size-9 place-items-center rounded-full border border-gold/30 bg-gold-soft font-mono text-sm text-gold">
-                {ver.number}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">{ver.created_by === 'upload' ? 'Original upload' : ver.created_by}</p>
-                <p className="text-xs text-paper-faint">
-                  {formatDate(ver.created_at)} · {formatBytes(ver.size_bytes)} · <span className="font-mono">{ver.sha256.slice(0, 12)}…</span>
-                </p>
+      {v && active && (
+        <>
+          <Tabs tabs={tabs} active={active.key} onChange={setTab} />
+          <div role="tabpanel">
+            {active.key === 'preview' && <PreviewPanel version={v} kind={d.kind} page={page} onPageChange={setPage} />}
+            {active.key !== 'preview' && active.key !== 'details' && active.render(d, v)}
+            {active.key === 'details' && (
+              <div className="space-y-8">
+                <section className="surface px-6 py-3" aria-label="File details">
+                  <dl className="divide-y divide-ink-700/70">
+                    <Meta label="Original name">{d.original_filename}</Meta>
+                    <Meta label="Size">{formatBytes(v.size_bytes)}</Meta>
+                    <Meta label="Uploaded">{formatDate(d.created_at)}</Meta>
+                    <Meta label="SHA-256">
+                      <code className="block font-mono text-xs break-all text-paper-dim">{v.sha256}</code>
+                    </Meta>
+                    <Meta label="Analysis">
+                      <span className="mr-3">{v.analysis_status}</span>
+                      <Button size="sm" variant="secondary" loading={reanalyse.isPending} onClick={() => reanalyse.mutate(v.id)}>
+                        Re-run analysis
+                      </Button>
+                    </Meta>
+                  </dl>
+                </section>
+                <section aria-labelledby="versions-h">
+                  <h2 id="versions-h" className="mb-4 flex items-center gap-2 font-serif text-2xl font-semibold">
+                    <Icon name="history" className="size-5 text-gold" /> Version history
+                  </h2>
+                  <ol className="surface divide-y divide-ink-700/70">
+                    {(versions.data ?? []).map((ver) => (
+                      <li key={ver.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
+                        <span className="grid size-9 place-items-center rounded-full border border-gold/30 bg-gold-soft font-mono text-sm text-gold">{ver.number}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium">
+                            {ver.created_by === 'upload' ? 'Original upload' : ver.created_by === 'changeset' ? 'Approved corrections' : ver.created_by}
+                          </p>
+                          <p className="text-xs text-paper-faint">
+                            {formatDate(ver.created_at)} · {formatBytes(ver.size_bytes)} · <span className="font-mono">{ver.sha256.slice(0, 12)}…</span>
+                          </p>
+                        </div>
+                        <Button variant="secondary" size="sm" onClick={() => void download(ver, d.original_filename)}>
+                          <Icon name="download" /> Download
+                        </Button>
+                      </li>
+                    ))}
+                    {versions.isPending && <li className="h-16 animate-pulse" />}
+                  </ol>
+                </section>
               </div>
-              <Button variant="secondary" size="sm" onClick={() => void download(ver, d.original_filename)}>
-                <Icon name="download" /> Download
-              </Button>
-            </li>
-          ))}
-          {versions.isPending && <li className="h-16 animate-pulse" />}
-        </ol>
-      </section>
+            )}
+          </div>
+        </>
+      )}
 
       <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Remove this document?">
-        <p className="text-sm text-paper-dim">
-          It will disappear from your library. The original file is retained in storage and is never destroyed.
-        </p>
+        <p className="text-sm text-paper-dim">It will disappear from your library. The original file is retained in storage and is never destroyed.</p>
         {remove.isError && <p className="mt-2 text-sm text-sev-critical">{remove.error.message}</p>}
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancel</Button>

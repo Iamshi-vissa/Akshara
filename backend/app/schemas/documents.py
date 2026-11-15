@@ -17,6 +17,8 @@ class VersionOut(ApiModel):
     number: int
     parent_version_id: uuid.UUID | None
     created_by: str
+    analysis_status: str
+    analysis_error: str | None = None
     size_bytes: int
     sha256: str
     summary: dict[str, Any]
@@ -45,3 +47,14 @@ class DocumentStats(ApiModel):
     versions: int
     stored_bytes: int
     by_kind: dict[str, int]
+
+
+class PageOut(ApiModel):
+    index: int
+    width_pt: float
+    height_pt: float
+    blank: bool
+
+
+class UploadOut(DocumentOut):
+    job_id: uuid.UUID | None = None
