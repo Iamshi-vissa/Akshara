@@ -117,9 +117,7 @@ def kind_from_filename(filename: str) -> DocumentKind:
         )
     kind = EXTENSIONS.get(suffix)
     if kind is None:
-        raise FileRejected(
-            "UNSUPPORTED_EXTENSION", "Only .docx, .pdf and .pptx files are supported."
-        )
+        raise FileRejected("UNSUPPORTED_EXTENSION", "Only .docx, .pdf and .pptx files are supported.")
     return kind
 
 
@@ -151,18 +149,14 @@ def inspect_file(path: Path, filename: str, limits: SafetyLimits) -> FileInspect
         detected = "pdf"
         warnings = _inspect_pdf(path)
     else:
-        raise FileRejected(
-            "UNRECOGNISED_CONTENT", "The file content is not a valid DOCX, PDF or PPTX document."
-        )
+        raise FileRejected("UNRECOGNISED_CONTENT", "The file content is not a valid DOCX, PDF or PPTX document.")
 
     if detected != expected:
         raise FileRejected(
             "EXTENSION_MISMATCH",
             f"The file is named .{expected} but its content is {detected.upper()}.",
         )
-    return FileInspection(
-        kind=detected, mime_type=MIME_TYPES[detected], size_bytes=size, warnings=warnings
-    )
+    return FileInspection(kind=detected, mime_type=MIME_TYPES[detected], size_bytes=size, warnings=warnings)
 
 
 def _inspect_ooxml(path: Path, limits: SafetyLimits) -> DocumentKind:
@@ -187,15 +181,11 @@ def _inspect_ooxml(path: Path, limits: SafetyLimits) -> DocumentKind:
                 raise FileRejected("ENCRYPTED_PART", "Encrypted document parts are not supported.")
             total += info.file_size
             if total > limits.max_uncompressed_bytes:
-                raise FileRejected(
-                    "DECOMPRESSION_LIMIT", "The document expands to more data than allowed."
-                )
+                raise FileRejected("DECOMPRESSION_LIMIT", "The document expands to more data than allowed.")
             if info.file_size > 1024 * 1024 and info.file_size > limits.max_compression_ratio * max(
                 info.compress_size, 1
             ):
-                raise FileRejected(
-                    "COMPRESSION_RATIO", "The document has a suspicious compression ratio."
-                )
+                raise FileRejected("COMPRESSION_RATIO", "The document has a suspicious compression ratio.")
             names.add(name.lower())
 
         if any(n.endswith("vbaproject.bin") for n in names):
@@ -216,9 +206,7 @@ def _inspect_ooxml(path: Path, limits: SafetyLimits) -> DocumentKind:
             raise FileRejected("CORRUPT_PACKAGE", "The document package is damaged.") from exc
 
     content_types = {
-        el.get("ContentType", "")
-        for el in root.iter()
-        if el.tag in (f"{_CT_NS}Override", f"{_CT_NS}Default")
+        el.get("ContentType", "") for el in root.iter() if el.tag in (f"{_CT_NS}Override", f"{_CT_NS}Default")
     }
     if content_types & _MACRO_CONTENT_TYPES:
         raise FileRejected(
@@ -227,9 +215,7 @@ def _inspect_ooxml(path: Path, limits: SafetyLimits) -> DocumentKind:
         )
     kinds = {_MAIN_CONTENT_TYPES[ct] for ct in content_types if ct in _MAIN_CONTENT_TYPES}
     if len(kinds) != 1:
-        raise FileRejected(
-            "UNSUPPORTED_PACKAGE", "The Office package is not a Word or PowerPoint document."
-        )
+        raise FileRejected("UNSUPPORTED_PACKAGE", "The Office package is not a Word or PowerPoint document.")
     return kinds.pop()
 
 
@@ -254,7 +240,5 @@ def _inspect_pdf(path: Path) -> list[str]:
                     found.add(_PDF_ACTIVE_NAMES[name])
             tail = window[-64:]
     if encrypted:
-        raise FileRejected(
-            "ENCRYPTED_PDF", "Password-protected PDFs are not supported. Remove the password first."
-        )
+        raise FileRejected("ENCRYPTED_PDF", "Password-protected PDFs are not supported. Remove the password first.")
     return [f"pdf_active_content:{name}" for name in sorted(found)]

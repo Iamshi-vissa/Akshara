@@ -76,9 +76,7 @@ async def analyse(ctx: JobContext, params: dict[str, Any]) -> dict[str, Any]:
             info = summary(adm)
         await s.execute(delete(RenderPage).where(RenderPage.version_id == version_id))
         if render is not None:
-            version.render_pdf_blob = await store_bytes(
-                s, ctx.storage, render.pdf, "application/pdf"
-            )
+            version.render_pdf_blob = await store_bytes(s, ctx.storage, render.pdf, "application/pdf")
             layout = {
                 "renderer": render.renderer,
                 "page_count": render.page_count,
@@ -122,7 +120,15 @@ async def analyse(ctx: JobContext, params: dict[str, Any]) -> dict[str, Any]:
         doc.status = "ready"
         await s.commit()
         if version.analysis_status == "failed":
-            raise AppError(
-                "The document could not be analysed: " + "; ".join(warnings), code="ANALYSIS_FAILED"
-            )
-        return {"version_id": str(version_id), "summary": info}
+            raise AppError("The document could not be analysed: " + "; ".join(warnings), code="ANALYSIS_FAILED")
+    # Inspect straight away so the workspace opens with findings (Phase 3).
+    run_id = None
+    if adm is not None:
+        from app.services.inspections.service import run_inspection
+
+        run_id = await run_inspection(ctx, version_id)
+    return {
+        "version_id": str(version_id),
+        "summary": info,
+        "inspection_run_id": str(run_id) if run_id else None,
+    }

@@ -36,6 +36,8 @@ KNOWN_DEFECTS = {
     "LAYOUT.EMPTY_PARAGRAPHS",
     "PAGE.NO_PAGE_NUMBERS",
     "PAGE.MARGINS_INCONSISTENT",
+    "REF.ORDER",  # [2] listed before [1]
+    "REF.UNCITED",  # no in-text citations at all
 }
 
 
@@ -45,9 +47,7 @@ def png_bytes(w: int = 240, h: int = 160) -> bytes:
     return pix.tobytes("png")
 
 
-def _base_style(
-    doc: Document, font: str = "Times New Roman", size: int = 12, spacing: float = 2.0
-) -> None:
+def _base_style(doc: Document, font: str = "Times New Roman", size: int = 12, spacing: float = 2.0) -> None:
     st = doc.styles["Normal"]
     st.font.name = font
     st.font.size = Pt(size)
@@ -113,19 +113,17 @@ def build_clean_report(path: Path) -> Path:
     _page_number_footer(sec)
     doc.core_properties.title = "Quality Assurance for Technical Documents"
     doc.core_properties.author = "A. Researcher"
-    doc.add_heading(
-        "Quality Assurance for Technical Documents", level=0
-    ).style.font.name = "Times New Roman"
+    doc.add_heading("Quality Assurance for Technical Documents", level=0).style.font.name = "Times New Roman"
     doc.add_heading("Abstract", level=1)
     doc.add_paragraph("This report studies automated checks for document structure and formatting.")
     doc.add_heading("1. Introduction", level=1)
-    doc.add_paragraph(BODY + " As shown in Figure 1, the pipeline has three stages.")
+    doc.add_paragraph(BODY + " As shown in Figure 1, the pipeline has three stages [1].")
     with tempfile.TemporaryDirectory() as t:
         _image(doc, Path(t))
     doc.add_paragraph("Figure 1. Overview of the processing pipeline.", style="Caption")
     doc.add_heading("2. Methodology", level=1)
     doc.add_heading("2.1 Data Collection", level=2)
-    doc.add_paragraph(BODY + " Table 1 lists the corpus.")
+    doc.add_paragraph(BODY + " Table 1 lists the corpus, following [2].")
     doc.add_paragraph("Table 1. Corpus statistics.", style="Caption")
     table = doc.add_table(rows=2, cols=2)
     for r, row in enumerate([("Documents", "120"), ("Pages", "2,400")]):
@@ -138,9 +136,7 @@ def build_clean_report(path: Path) -> Path:
     doc.add_heading("4. Conclusion", level=1)
     doc.add_paragraph(BODY)
     doc.add_heading("References", level=1)
-    doc.add_paragraph(
-        '[1] A. Author, "A study of documents," Journal of Testing, vol. 1, no. 2, pp. 1-10, 2020.'
-    )
+    doc.add_paragraph('[1] A. Author, "A study of documents," Journal of Testing, vol. 1, no. 2, pp. 1-10, 2020.')
     doc.add_paragraph("[2] B. Writer, Structured Writing. New York, NY, USA: Example Press, 2019.")
     doc.save(str(path))
     return path
@@ -176,9 +172,7 @@ def build_defective_report(path: Path) -> Path:
     with tempfile.TemporaryDirectory() as t:
         _image(doc, Path(t))
     doc.add_paragraph("Figure 3. Third result.", style="Caption")  # FIG.NUMBERING: 1 -> 3
-    doc.add_paragraph(
-        "Table 1. Never referenced in the text.", style="Caption"
-    )  # TBL.NOT_REFERENCED
+    doc.add_paragraph("Table 1. Never referenced in the text.", style="Caption")  # TBL.NOT_REFERENCED
     t = doc.add_table(rows=1, cols=2)
     t.cell(0, 0).text, t.cell(0, 1).text = "a", "b"
     for _ in range(3):  # LAYOUT.EMPTY_PARAGRAPHS
@@ -227,9 +221,7 @@ def build_overflow_deck(path: Path) -> Path:
     tf.text = " ".join(["This sentence is far too long for its small box."] * 14)
     for r in tf.paragraphs[0].runs:
         r.font.size = PPt(20)
-    off = s.shapes.add_textbox(
-        PInches(8.5), PInches(1), PInches(3), PInches(1)
-    )  # off the 10in slide
+    off = s.shapes.add_textbox(PInches(8.5), PInches(1), PInches(3), PInches(1))  # off the 10in slide
     off.text_frame.text = "Off-slide text"
     s2 = prs.slides.add_slide(prs.slide_layouts[5])
     s2.shapes.title.text = "Mixed fonts"

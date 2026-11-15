@@ -92,7 +92,7 @@ describe('authentication flow', () => {
     renderApp('/');
     expect(await screen.findByText('No documents yet')).toBeInTheDocument();
     await waitFor(() => expect(screen.getAllByText('Phase 3').length).toBeGreaterThan(0));
-    const inspectCard = screen.getByText('Inspect document').closest('[aria-disabled="true"]');
+    const inspectCard = screen.getByText('Quality & inspection').closest('[aria-disabled="true"]');
     expect(inspectCard).not.toBeNull();
     expect(screen.getByText('Upload & store').closest('a')).toHaveAttribute('href', '/documents');
   });

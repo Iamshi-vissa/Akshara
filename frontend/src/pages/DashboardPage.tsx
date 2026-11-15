@@ -16,7 +16,7 @@ import { formatBytes } from '@/lib/format';
 /** Quick actions from the brief. Each reflects the server's real capability flags. */
 const ACTIONS: { key: string; title: string; icon: IconName; to: string; blurb: string }[] = [
   { key: 'upload', title: 'Upload & store', icon: 'upload', to: '/documents', blurb: 'Add DOCX, PDF or PPTX to your secure library.' },
-  { key: 'inspect', title: 'Inspect document', icon: 'inspect', to: '/inspect', blurb: 'Find structural and formatting defects.' },
+  { key: 'inspect', title: 'Quality & inspection', icon: 'inspect', to: '/quality', blurb: 'Find structural and formatting defects.' },
   { key: 'standards', title: 'Apply standard', icon: 'standard', to: '/standards', blurb: 'Validate against IEEE, APA, MLA or your own rules.' },
   { key: 'edit', title: 'Edit document', icon: 'edit', to: '/edit', blurb: 'Tracked, approval-gated improvements.' },
   { key: 'create', title: 'Create document', icon: 'create', to: '/create', blurb: 'Outline-first drafting with real citations.' },

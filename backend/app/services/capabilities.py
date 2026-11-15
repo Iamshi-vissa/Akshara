@@ -1,83 +1,31 @@
 """What the running build can actually do.
 
 The frontend uses this to show unbuilt modules as unavailable instead of faking them
-(engineering rule: never build a fake working interface). Update this list as each phase is
-verified.
+(engineering rule: never build a fake working interface). ``COMPLETED_PHASE`` is raised only
+when a phase is implemented *and* verified; ``CONDITIONAL`` features additionally depend on
+configuration (e.g. an LLM provider) and say so.
 """
 
 from __future__ import annotations
 
 from app.schemas.system import Capability
 
+COMPLETED_PHASE = 3
+
+_ALL: list[tuple[str, str, int, str]] = [
+    ("upload", "Secure upload & library", 1, "DOCX, PDF and PPTX with content-based validation."),
+    ("versions", "Immutable originals & versions", 1, "Originals are stored once and never overwritten."),
+    ("preview", "Document parsing & preview", 2, "Canonical document model and page rendering."),
+    ("inspect", "Inspect document", 3, "Structural and formatting defects with severity levels."),
+    ("standards", "Apply standard (UDSE)", 4, "IEEE, APA, MLA and custom rule profiles."),
+    ("edit", "Edit & auto-correct", 5, "Tracked, approval-gated changes."),
+    ("create", "Create document", 6, "Outline-first generation with DOCX/PDF export."),
+    ("presentations", "Generate presentation", 7, "Themed PPTX with slide validation."),
+    ("visual", "Visual quality", 8, "Render-based layout defect detection."),
+    ("research", "References & research", 9, "Verified citations, never fabricated."),
+]
+
 CAPABILITIES: list[Capability] = [
-    Capability(
-        key="upload",
-        label="Secure upload & library",
-        available=True,
-        phase=1,
-        note="DOCX, PDF and PPTX with content-based validation.",
-    ),
-    Capability(
-        key="versions",
-        label="Immutable originals & versions",
-        available=True,
-        phase=1,
-        note="Originals are stored once and never overwritten.",
-    ),
-    Capability(
-        key="preview",
-        label="Document parsing & preview",
-        available=False,
-        phase=2,
-        note="Canonical document model and page rendering.",
-    ),
-    Capability(
-        key="inspect",
-        label="Inspect document",
-        available=False,
-        phase=3,
-        note="Structural and formatting defects with severity levels.",
-    ),
-    Capability(
-        key="standards",
-        label="Apply standard (UDSE)",
-        available=False,
-        phase=4,
-        note="IEEE, APA, MLA and custom rule profiles.",
-    ),
-    Capability(
-        key="edit",
-        label="Edit & auto-correct",
-        available=False,
-        phase=5,
-        note="Tracked, approval-gated changes.",
-    ),
-    Capability(
-        key="create",
-        label="Create document",
-        available=False,
-        phase=6,
-        note="Outline-first generation with DOCX/PDF export.",
-    ),
-    Capability(
-        key="presentations",
-        label="Generate presentation",
-        available=False,
-        phase=7,
-        note="Themed PPTX with slide validation.",
-    ),
-    Capability(
-        key="visual",
-        label="Visual quality",
-        available=False,
-        phase=8,
-        note="Render-based layout defect detection.",
-    ),
-    Capability(
-        key="research",
-        label="References & research",
-        available=False,
-        phase=9,
-        note="Verified citations, never fabricated.",
-    ),
+    Capability(key=k, label=label, available=phase <= COMPLETED_PHASE, phase=phase, note=note)
+    for k, label, phase, note in _ALL
 ]

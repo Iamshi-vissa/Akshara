@@ -21,13 +21,9 @@ from app.core.config import Settings
 from app.main import create_app
 
 BACKEND = Path(__file__).resolve().parents[1]
-TEST_DB = os.environ.get(
-    "AKSHARA_TEST_DATABASE_URL", "postgresql+asyncpg://akshara@localhost:5432/akshara_test"
-)
+TEST_DB = os.environ.get("AKSHARA_TEST_DATABASE_URL", "postgresql+asyncpg://akshara@localhost:5432/akshara_test")
 TEST_REDIS = os.environ.get("AKSHARA_TEST_REDIS_URL", "redis://localhost:6379/15")
-TABLES = (
-    "audit_events, refresh_tokens, jobs, render_pages, document_versions, documents, blobs, users"
-)
+TABLES = "audit_events, refresh_tokens, jobs, render_pages, document_versions, documents, blobs, users"
 
 
 @pytest.fixture(scope="session")

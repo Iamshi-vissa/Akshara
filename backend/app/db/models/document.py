@@ -31,9 +31,7 @@ class Blob(Base):
     size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     mime_type: Mapped[str] = mapped_column(String(120), nullable=False)
     storage_key: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 
 class Document(UUIDPk, Timestamps, Base):
@@ -45,9 +43,7 @@ class Document(UUIDPk, Timestamps, Base):
         Index("ix_documents_owner_updated", "owner_id", "updated_at"),
     )
 
-    owner_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    owner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     workspace_id: Mapped[uuid.UUID | None] = mapped_column()  # reserved (D3)
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     original_filename: Mapped[str] = mapped_column(String(300), nullable=False)
@@ -57,9 +53,7 @@ class Document(UUIDPk, Timestamps, Base):
     current_version_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("document_versions.id", use_alter=True, ondelete="SET NULL")
     )
-    safety_warnings: Mapped[list[str]] = mapped_column(
-        JSONB, default=list, server_default="[]", nullable=False
-    )
+    safety_warnings: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]", nullable=False)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
@@ -77,29 +71,19 @@ class DocumentVersion(UUIDPk, Base):
         ForeignKey("documents.id", ondelete="CASCADE"), index=True, nullable=False
     )
     number: Mapped[int] = mapped_column(Integer, nullable=False)
-    parent_version_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("document_versions.id", ondelete="SET NULL")
-    )
-    source_blob: Mapped[str] = mapped_column(
-        ForeignKey("blobs.sha256", ondelete="RESTRICT"), nullable=False
-    )
+    parent_version_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("document_versions.id", ondelete="SET NULL"))
+    source_blob: Mapped[str] = mapped_column(ForeignKey("blobs.sha256", ondelete="RESTRICT"), nullable=False)
     adm_blob: Mapped[str | None] = mapped_column(ForeignKey("blobs.sha256", ondelete="RESTRICT"))
     adm_schema_version: Mapped[str | None] = mapped_column(String(16))
     layout_blob: Mapped[str | None] = mapped_column(ForeignKey("blobs.sha256", ondelete="RESTRICT"))
-    render_pdf_blob: Mapped[str | None] = mapped_column(
-        ForeignKey("blobs.sha256", ondelete="RESTRICT")
-    )
+    render_pdf_blob: Mapped[str | None] = mapped_column(ForeignKey("blobs.sha256", ondelete="RESTRICT"))
     analysis_status: Mapped[str] = mapped_column(
         String(16), default="pending", server_default="pending", nullable=False
     )
     analysis_error: Mapped[str | None] = mapped_column(Text)
     created_by: Mapped[str] = mapped_column(String(16), nullable=False)
-    summary: Mapped[dict[str, Any]] = mapped_column(
-        JSONB, default=dict, server_default="{}", nullable=False
-    )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    summary: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 
 class RenderPage(UUIDPk, Base):
@@ -114,7 +98,5 @@ class RenderPage(UUIDPk, Base):
     page_index: Mapped[int] = mapped_column(Integer, nullable=False)
     width_pt: Mapped[float] = mapped_column(nullable=False)
     height_pt: Mapped[float] = mapped_column(nullable=False)
-    image_blob: Mapped[str] = mapped_column(
-        ForeignKey("blobs.sha256", ondelete="RESTRICT"), nullable=False
-    )
+    image_blob: Mapped[str] = mapped_column(ForeignKey("blobs.sha256", ondelete="RESTRICT"), nullable=False)
     blank: Mapped[bool] = mapped_column(default=False, nullable=False)

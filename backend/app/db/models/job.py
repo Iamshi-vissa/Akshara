@@ -14,15 +14,11 @@ from app.db.base import Base, UUIDPk
 class Job(UUIDPk, Base):
     __tablename__ = "jobs"
     __table_args__ = (
-        CheckConstraint(
-            "status IN ('queued','running','succeeded','failed','cancelled')", name="status"
-        ),
+        CheckConstraint("status IN ('queued','running','succeeded','failed','cancelled')", name="status"),
         Index("ix_jobs_owner_created", "owner_id", "created_at"),
     )
 
-    owner_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    owner_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     type: Mapped[str] = mapped_column(String(32), nullable=False)
     status: Mapped[str] = mapped_column(String(16), nullable=False, default="queued")
     progress: Mapped[float] = mapped_column(Float, default=0.0, server_default="0")
@@ -33,8 +29,6 @@ class Job(UUIDPk, Base):
     error_code: Mapped[str | None] = mapped_column(String(64))
     error_message: Mapped[str | None] = mapped_column(Text)
     celery_task_id: Mapped[str | None] = mapped_column(String(64))
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

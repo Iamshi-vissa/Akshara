@@ -76,9 +76,7 @@ class DocumentService:
         try:
             inspection = await run_in_threadpool(inspect_file, temp_path, filename, self.limits)
         except FileRejected as exc:
-            audit.record(
-                self.session, "document.upload_rejected", owner_id=owner_id, ip=ip, reason=exc.code
-            )
+            audit.record(self.session, "document.upload_rejected", owner_id=owner_id, ip=ip, reason=exc.code)
             await self.session.commit()
             status = 413 if exc.code == "FILE_TOO_LARGE" else 415
             raise UnsupportedFileError(exc.message, code=exc.code, status_code=status) from exc
@@ -157,12 +155,8 @@ class DocumentService:
 
     async def get(self, owner_id: uuid.UUID, document_id: uuid.UUID) -> DocumentView:
         doc = await self._load(owner_id, document_id)
-        views = await self._version_views(
-            [doc.current_version_id] if doc.current_version_id else []
-        )
-        return DocumentView(
-            doc, views.get(doc.current_version_id) if doc.current_version_id else None
-        )
+        views = await self._version_views([doc.current_version_id] if doc.current_version_id else [])
+        return DocumentView(doc, views.get(doc.current_version_id) if doc.current_version_id else None)
 
     async def list_documents(
         self,
@@ -181,29 +175,20 @@ class DocumentService:
             stmt = stmt.where(Document.title.ilike(f"%{escaped}%", escape="\\"))
         if cursor:
             stmt = stmt.where(Document.id < cursor)  # UUIDv7 ids are time-ordered
-        docs = list(
-            (await self.session.scalars(stmt.order_by(Document.id.desc()).limit(limit + 1))).all()
-        )
+        docs = list((await self.session.scalars(stmt.order_by(Document.id.desc()).limit(limit + 1))).all())
         next_cursor = docs[limit - 1].id if len(docs) > limit else None
         docs = docs[:limit]
-        views = await self._version_views(
-            [d.current_version_id for d in docs if d.current_version_id]
-        )
+        views = await self._version_views([d.current_version_id for d in docs if d.current_version_id])
         return [
-            DocumentView(d, views.get(d.current_version_id) if d.current_version_id else None)
-            for d in docs
+            DocumentView(d, views.get(d.current_version_id) if d.current_version_id else None) for d in docs
         ], next_cursor
 
     async def stats(self, owner_id: uuid.UUID) -> dict[str, object]:
         owned = self._owned(owner_id).subquery()
-        by_kind_rows = await self.session.execute(
-            select(owned.c.kind, func.count()).group_by(owned.c.kind)
-        )
+        by_kind_rows = await self.session.execute(select(owned.c.kind, func.count()).group_by(owned.c.kind))
         by_kind = {k: int(n) for k, n in by_kind_rows}
         versions = await self.session.scalar(
-            select(func.count(DocumentVersion.id)).join(
-                owned, owned.c.id == DocumentVersion.document_id
-            )
+            select(func.count(DocumentVersion.id)).join(owned, owned.c.id == DocumentVersion.document_id)
         )
         distinct_blobs = (
             select(DocumentVersion.source_blob)
@@ -233,9 +218,7 @@ class DocumentService:
         )
         return [VersionView(v, b) for v, b in rows]
 
-    async def download(
-        self, owner_id: uuid.UUID, version_id: uuid.UUID, ip: str | None = None
-    ) -> Download:
+    async def download(self, owner_id: uuid.UUID, version_id: uuid.UUID, ip: str | None = None) -> Download:
         row = (
             await self.session.execute(
                 select(DocumentVersion, Document, Blob)
@@ -264,9 +247,7 @@ class DocumentService:
         await self.session.commit()
         stem = PurePosixPath(doc.original_filename).stem
         suffix = f".{doc.kind}"
-        filename = (
-            doc.original_filename if version.number == 1 else f"{stem}.v{version.number}{suffix}"
-        )
+        filename = doc.original_filename if version.number == 1 else f"{stem}.v{version.number}{suffix}"
         return Download(
             filename=filename,
             mime_type=blob.mime_type,
@@ -282,9 +263,7 @@ class DocumentService:
         await self.session.commit()
         return await self.get(owner_id, document_id)
 
-    async def soft_delete(
-        self, owner_id: uuid.UUID, document_id: uuid.UUID, ip: str | None = None
-    ) -> None:
+    async def soft_delete(self, owner_id: uuid.UUID, document_id: uuid.UUID, ip: str | None = None) -> None:
         """Hide the document. Blobs and versions are retained (originals are never destroyed)."""
         doc = await self._load(owner_id, document_id)
         doc.deleted_at = datetime.now(UTC)

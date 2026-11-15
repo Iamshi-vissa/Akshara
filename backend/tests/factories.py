@@ -47,9 +47,7 @@ def ooxml_bytes(
     return buf.getvalue()
 
 
-def pdf_bytes(
-    *, javascript: bool = False, encrypted: bool = False, hex_escaped: bool = False
-) -> bytes:
+def pdf_bytes(*, javascript: bool = False, encrypted: bool = False, hex_escaped: bool = False) -> bytes:
     catalog_extra = b""
     if javascript:
         name = b"/J#61vaScript" if hex_escaped else b"/JavaScript"

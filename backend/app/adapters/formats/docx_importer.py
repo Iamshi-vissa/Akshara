@@ -68,16 +68,10 @@ class _StyleResolver:
     def __init__(self, doc: DocxDocument) -> None:
         self.doc = doc
         styles_el = doc.styles.element
-        self.styles_by_id: dict[str, Any] = {
-            s.get(qn("w:styleId")): s for s in styles_el.findall(qn("w:style"))
-        }
+        self.styles_by_id: dict[str, Any] = {s.get(qn("w:styleId")): s for s in styles_el.findall(qn("w:style"))}
         defaults = styles_el.find(qn("w:docDefaults"))
-        self.default_rpr = (
-            defaults.find(f"{qn('w:rPrDefault')}/{qn('w:rPr')}") if defaults is not None else None
-        )
-        self.default_ppr = (
-            defaults.find(f"{qn('w:pPrDefault')}/{qn('w:pPr')}") if defaults is not None else None
-        )
+        self.default_rpr = defaults.find(f"{qn('w:rPrDefault')}/{qn('w:rPr')}") if defaults is not None else None
+        self.default_ppr = defaults.find(f"{qn('w:pPrDefault')}/{qn('w:pPr')}") if defaults is not None else None
         self.theme_fonts = self._theme_fonts()
         default_para = next(
             (
@@ -87,9 +81,7 @@ class _StyleResolver:
             ),
             None,
         )
-        self.default_para_style_id = (
-            default_para.get(qn("w:styleId")) if default_para is not None else None
-        )
+        self.default_para_style_id = default_para.get(qn("w:styleId")) if default_para is not None else None
 
     def _theme_fonts(self) -> dict[str, str]:
         fonts: dict[str, str] = {}
@@ -213,9 +205,7 @@ class _StyleResolver:
         return ParaFmt(**acc)
 
     def outline_level(self, p: DocxParagraph) -> int | None:
-        for el in [p._p.pPr] + [
-            st.find(qn("w:pPr")) for st in reversed(self._chain(self.para_style_id(p)))
-        ]:
+        for el in [p._p.pPr] + [st.find(qn("w:pPr")) for st in reversed(self._chain(self.para_style_id(p)))]:
             if el is None:
                 continue
             ol = el.find(qn("w:outlineLvl"))
@@ -225,9 +215,7 @@ class _StyleResolver:
         return None
 
     def is_numbered(self, p: DocxParagraph) -> bool:
-        for el in [p._p.pPr] + [
-            st.find(qn("w:pPr")) for st in reversed(self._chain(self.para_style_id(p)))
-        ]:
+        for el in [p._p.pPr] + [st.find(qn("w:pPr")) for st in reversed(self._chain(self.para_style_id(p)))]:
             if el is not None and el.find(qn("w:numPr")) is not None:
                 num = el.find(qn("w:numPr")).find(qn("w:numId"))
                 return not (num is not None and num.get(qn("w:val")) == "0")
@@ -312,11 +300,7 @@ def import_docx(path: Path) -> AdmDocument:
             add(tnode)
             pending_caption_targets.append(len(body) - 1)
             prev_cap = body[last_caption_idx] if last_caption_idx is not None else None
-            if (
-                isinstance(prev_cap, Caption)
-                and prev_cap.target_kind == "table"
-                and prev_cap.target_id is None
-            ):
+            if isinstance(prev_cap, Caption) and prev_cap.target_kind == "table" and prev_cap.target_id is None:
                 prev_cap.target_id, prev_cap.position, tnode.caption_id = (
                     tnode.id,
                     "above",
@@ -346,12 +330,8 @@ def import_docx(path: Path) -> AdmDocument:
                     else:
                         texts.append("\n")
                 elif name == "drawing":
-                    ext = t.find(
-                        ".//{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}extent"
-                    )
-                    doc_pr = t.find(
-                        ".//{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}docPr"
-                    )
+                    ext = t.find(".//{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}extent")
+                    doc_pr = t.find(".//{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}docPr")
                     w = int(ext.get("cx")) / EMU_PER_PT if ext is not None else None
                     h = int(ext.get("cy")) / EMU_PER_PT if ext is not None else None
                     alt = (doc_pr.get("descr") or None) if doc_pr is not None else None
@@ -384,11 +364,7 @@ def import_docx(path: Path) -> AdmDocument:
 
         if not stripped and not figure_sizes:
             if not page_break:
-                add(
-                    Paragraph(
-                        id=f"p{idx}", source=src, runs=runs, style_ref=style, fmt=fmt, role="empty"
-                    )
-                )
+                add(Paragraph(id=f"p{idx}", source=src, runs=runs, style_ref=style, fmt=fmt, role="empty"))
         elif stripped:
             level = res.outline_level(p)
             if style and style.lower() == "title":
@@ -436,8 +412,7 @@ def import_docx(path: Path) -> AdmDocument:
                     prev is not None
                     and pending_caption_targets[-1] == len(body) - 1
                     and (
-                        (kind == "figure" and isinstance(prev, Figure))
-                        or (kind == "table" and isinstance(prev, Table))
+                        (kind == "figure" and isinstance(prev, Figure)) or (kind == "table" and isinstance(prev, Table))
                     )
                 ):
                     cap_node.target_id, cap_node.position = prev.id, "below"
@@ -451,9 +426,7 @@ def import_docx(path: Path) -> AdmDocument:
                         role = "list_item"
                     elif style and style.lower() == "subtitle":
                         role = "subtitle"
-                node = Paragraph(
-                    id=f"p{idx}", source=src, runs=runs, style_ref=style, fmt=fmt, role=role
-                )
+                node = Paragraph(id=f"p{idx}", source=src, runs=runs, style_ref=style, fmt=fmt, role=role)
             add(node)
         if page_break:
             add(PageBreak(id=f"b{idx}", source=src))
@@ -491,6 +464,4 @@ def import_docx(path: Path) -> AdmDocument:
         language=props.language or None,
         word_count=count_words(full_text),
     )
-    return AdmDocument(
-        source_format="docx", metadata=meta, page_setups=setups, body=body, warnings=warnings
-    )
+    return AdmDocument(source_format="docx", metadata=meta, page_setups=setups, body=body, warnings=warnings)

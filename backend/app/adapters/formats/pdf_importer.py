@@ -44,6 +44,7 @@ CAPTION_RE = re.compile(
     re.IGNORECASE,
 )
 NUMBER_LABEL_RE = re.compile(r"^\s*((?:\d+(?:\.\d+)*\.?)|(?:[IVXLC]+\.)|(?:[A-Z]\.))\s+\S")
+REF_LABEL_RE = re.compile(r"^\s*(\[\d+\]|\d+\.\s)")  # a new reference-list entry
 BAND = 0.07  # top/bottom fraction of the page treated as header/footer area
 MAX_TABLE_PAGES = 60
 
@@ -91,6 +92,7 @@ def _merge_lines(blocks: list[dict]) -> list[dict]:  # type: ignore[type-arg]
             and abs(x0 - min(px0, x0)) < size * 3
             and px1 >= right_edge - size * 2.5
             and not CAPTION_RE.match(b["text"])
+            and not REF_LABEL_RE.match(b["text"])
         )
         if continues:
             prev["text"] = prev["text"] + " " + b["text"]
@@ -128,9 +130,7 @@ def _import(doc: pymupdf.Document) -> AdmDocument:
             spans = [s for line in b["lines"] for s in line["spans"] if s["text"].strip()]
             if not spans:
                 continue
-            text = "\n".join(
-                "".join(s["text"] for s in line["spans"]) for line in b["lines"]
-            ).strip()
+            text = "\n".join("".join(s["text"] for s in line["spans"]) for line in b["lines"]).strip()
             for s in spans:
                 n = len(s["text"].strip())
                 size_chars[round(s["size"], 1)] += n
@@ -149,9 +149,7 @@ def _import(doc: pymupdf.Document) -> AdmDocument:
                 }
             )
         images = [i["bbox"] for i in page.get_image_info() if i["bbox"][2] - i["bbox"][0] > 20]
-        pages.append(
-            {"w": w, "h": h, "blocks": _merge_lines(blocks), "images": images, "page": page}
-        )
+        pages.append({"w": w, "h": h, "blocks": _merge_lines(blocks), "images": images, "page": page})
 
     body_size = size_chars.most_common(1)[0][0] if size_chars else 0.0
     repeated = {t for t, n in band_lines.items() if n >= max(2, doc.page_count * 0.5)}
@@ -167,22 +165,13 @@ def _import(doc: pymupdf.Document) -> AdmDocument:
         return larger or (bold and (numbered or named) and len(text) < 100)
 
     cand_sizes = sorted(
-        {
-            _style_key(b)[1]
-            for pg in pages
-            for b in pg["blocks"]
-            if not b["in_band"] and heading_like(b)
-        },
+        {_style_key(b)[1] for pg in pages for b in pg["blocks"] if not b["in_band"] and heading_like(b)},
         reverse=True,
     )
-    first_page_heads = (
-        [b for b in pages[0]["blocks"] if not b["in_band"] and heading_like(b)] if pages else []
-    )
+    first_page_heads = [b for b in pages[0]["blocks"] if not b["in_band"] and heading_like(b)] if pages else []
     title_size = (
         cand_sizes[0]
-        if first_page_heads
-        and len(cand_sizes) > 1
-        and _style_key(first_page_heads[0])[1] == cand_sizes[0]
+        if first_page_heads and len(cand_sizes) > 1 and _style_key(first_page_heads[0])[1] == cand_sizes[0]
         else None
     )
     rank_sizes = [s for s in cand_sizes if s != title_size]
@@ -207,9 +196,7 @@ def _import(doc: pymupdf.Document) -> AdmDocument:
         for b in pg["blocks"]:
             x0, y0, x1, y1 = b["bbox"]
             norm = re.sub(r"\d+", "#", b["text"])
-            if b["in_band"] and (
-                norm in repeated or re.fullmatch(r"#|Page # (of #)?|- # -", norm.strip())
-            ):
+            if b["in_band"] and (norm in repeated or re.fullmatch(r"#|Page # (of #)?|- # -", norm.strip())):
                 hf = HeaderFooter(
                     kind="header" if y1 < h / 2 else "footer",
                     text=b["text"],
@@ -237,9 +224,7 @@ def _import(doc: pymupdf.Document) -> AdmDocument:
                 )
                 for s in b["spans"]
             ]
-            src = Source(
-                fmt="pdf", page=pno, bbox=(round(x0, 1), round(y0, 1), round(x1, 1), round(y1, 1))
-            )
+            src = Source(fmt="pdf", page=pno, bbox=(round(x0, 1), round(y0, 1), round(x1, 1), round(y1, 1)))
             nid = f"pg{pno}.{len(body)}"
             text = b["text"].replace("\n", " ").strip()
             fmt = ParaFmt(alignment=None)
@@ -304,9 +289,7 @@ def _import(doc: pymupdf.Document) -> AdmDocument:
         if pno < MAX_TABLE_PAGES:
             try:
                 for ti, tab in enumerate(pg["page"].find_tables().tables):
-                    rows = [
-                        [TableCell(text=(c or "").strip()) for c in row] for row in tab.extract()
-                    ]
+                    rows = [[TableCell(text=(c or "").strip()) for c in row] for row in tab.extract()]
                     bx = tab.bbox
                     body.append(
                         Table(
@@ -330,10 +313,7 @@ def _import(doc: pymupdf.Document) -> AdmDocument:
             left=round(min_left, 1),
             right=round(min_right, 1),
         )
-        if min_left is not None
-        and min_top is not None
-        and min_bottom is not None
-        and min_right is not None
+        if min_left is not None and min_top is not None and min_bottom is not None and min_right is not None
         else None
     )
     for pno, pg in enumerate(pages):
@@ -367,9 +347,5 @@ def _import(doc: pymupdf.Document) -> AdmDocument:
         word_count=count_words(text),
     )
     if font_chars:
-        warnings.append(
-            f"Dominant font: {font_chars.most_common(1)[0][0]}, body size ≈ {body_size} pt."
-        )
-    return AdmDocument(
-        source_format="pdf", metadata=meta, page_setups=setups, body=body, warnings=warnings
-    )
+        warnings.append(f"Dominant font: {font_chars.most_common(1)[0][0]}, body size ≈ {body_size} pt.")
+    return AdmDocument(source_format="pdf", metadata=meta, page_setups=setups, body=body, warnings=warnings)

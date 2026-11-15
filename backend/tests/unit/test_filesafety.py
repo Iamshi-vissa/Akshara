@@ -180,9 +180,7 @@ def test_pdf_javascript_is_warned_not_executed(tmp_path: Path) -> None:
 
 def test_pdf_open_action_alone_is_not_flagged(tmp_path: Path) -> None:
     """Benign PDFs (e.g. from LibreOffice) use /OpenAction just to set the initial view."""
-    data = f.pdf_bytes().replace(
-        b"/Pages 2 0 R", b"/Pages 2 0 R /OpenAction [3 0 R /XYZ null null 0]"
-    )
+    data = f.pdf_bytes().replace(b"/Pages 2 0 R", b"/Pages 2 0 R /OpenAction [3 0 R /XYZ null null 0]")
     r = inspect_file(f.write(tmp_path, "a.pdf", data), "a.pdf", LIMITS)
     assert r.warnings == []
 

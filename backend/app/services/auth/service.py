@@ -48,9 +48,7 @@ class AuthService:
         self.session = session
         self.settings = settings
 
-    async def register(
-        self, email: str, password: str, display_name: str | None, client: ClientInfo
-    ) -> User:
+    async def register(self, email: str, password: str, display_name: str | None, client: ClientInfo) -> User:
         user = User(
             email=email.strip(),
             password_hash=hash_password(password),
@@ -61,9 +59,7 @@ class AuthService:
             await self.session.flush()
         except IntegrityError as exc:
             await self.session.rollback()
-            raise ConflictError(
-                "An account with this e-mail already exists.", code="EMAIL_TAKEN"
-            ) from exc
+            raise ConflictError("An account with this e-mail already exists.", code="EMAIL_TAKEN") from exc
         audit.record(self.session, "auth.register", owner_id=user.id, ip=client.ip)
         await self.session.commit()
         return user
@@ -91,9 +87,7 @@ class AuthService:
 
     async def refresh(self, raw_token: str, client: ClientInfo) -> IssuedTokens:
         row = await self.session.scalar(
-            select(RefreshToken)
-            .where(RefreshToken.token_hash == hash_token(raw_token))
-            .with_for_update()
+            select(RefreshToken).where(RefreshToken.token_hash == hash_token(raw_token)).with_for_update()
         )
         now = datetime.now(UTC)
         if row is None:
@@ -126,9 +120,7 @@ class AuthService:
     async def logout(self, raw_token: str | None) -> None:
         if not raw_token:
             return
-        row = await self.session.scalar(
-            select(RefreshToken).where(RefreshToken.token_hash == hash_token(raw_token))
-        )
+        row = await self.session.scalar(select(RefreshToken).where(RefreshToken.token_hash == hash_token(raw_token)))
         if row is None:
             return
         await self._revoke_family(row.family_id, datetime.now(UTC))
@@ -150,17 +142,13 @@ class AuthService:
             user.preferred_unit = preferred_unit
         if allow_external_llm is not None and allow_external_llm != user.allow_external_llm:
             user.allow_external_llm = allow_external_llm
-            audit.record(
-                self.session, "user.llm_consent_changed", owner_id=user.id, value=allow_external_llm
-            )
+            audit.record(self.session, "user.llm_consent_changed", owner_id=user.id, value=allow_external_llm)
         await self.session.commit()
         await self.session.refresh(user)
         return user
 
     # ------------------------------------------------------------------------------------
-    def _issue(
-        self, user_id: uuid.UUID, *, family_id: uuid.UUID, client: ClientInfo
-    ) -> tuple[IssuedTokens, uuid.UUID]:
+    def _issue(self, user_id: uuid.UUID, *, family_id: uuid.UUID, client: ClientInfo) -> tuple[IssuedTokens, uuid.UUID]:
         access, ttl = create_access_token(user_id, self.settings)
         raw = new_refresh_token()
         expires = datetime.now(UTC) + timedelta(seconds=self.settings.refresh_token_ttl_seconds)
@@ -174,9 +162,7 @@ class AuthService:
             ip=client.ip,
         )
         self.session.add(row)
-        tokens = IssuedTokens(
-            access_token=access, expires_in=ttl, refresh_token=raw, refresh_expires_at=expires
-        )
+        tokens = IssuedTokens(access_token=access, expires_in=ttl, refresh_token=raw, refresh_expires_at=expires)
         return tokens, row.id
 
     async def _revoke_family(self, family_id: uuid.UUID, now: datetime) -> None:

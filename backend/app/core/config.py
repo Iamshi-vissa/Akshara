@@ -16,17 +16,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_prefix="AKSHARA_", env_file=".env", env_file_encoding="utf-8", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="AKSHARA_", env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     environment: Literal["development", "test", "production"] = "development"
     log_level: str = "INFO"
 
     # --- Database / broker -------------------------------------------------------------
-    database_url: str = Field(
-        description="SQLAlchemy async URL, e.g. postgresql+asyncpg://user:pass@host/db"
-    )
+    database_url: str = Field(description="SQLAlchemy async URL, e.g. postgresql+asyncpg://user:pass@host/db")
     redis_url: str = "redis://localhost:6379/0"
 
     # --- Security ----------------------------------------------------------------------

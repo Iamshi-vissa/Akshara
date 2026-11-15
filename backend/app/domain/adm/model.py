@@ -169,9 +169,7 @@ class PageBreak(_Node):
     text: str = ""
 
 
-Block = Annotated[
-    Paragraph | Heading | Caption | Table | Figure | PageBreak, Field(discriminator="type")
-]
+Block = Annotated[Paragraph | Heading | Caption | Table | Figure | PageBreak, Field(discriminator="type")]
 
 
 class Margins(_M):

@@ -12,7 +12,7 @@ from redis.asyncio import Redis
 from app import __version__
 from app.adapters.storage import LocalBlobStorage
 from app.api.deps import AppState
-from app.api.v1 import auth, documents, jobs, system, versions
+from app.api.v1 import auth, documents, inspections, jobs, system, versions
 from app.core.config import Settings, get_settings
 from app.core.errors import install_error_handlers
 from app.core.ids import uuid7
@@ -71,9 +71,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     install_error_handlers(app)
 
     @app.middleware("http")
-    async def request_context(
-        request: Request, call_next: Callable[[Request], Awaitable[Response]]
-    ) -> Response:
+    async def request_context(request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         incoming = request.headers.get("x-request-id", "")
         rid = incoming if _RID_RE.fullmatch(incoming) else str(uuid7())
         token = request_id_var.set(rid)
@@ -86,6 +84,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             response.headers.setdefault(k, v)
         return response
 
-    for router in (system.router, auth.router, documents.router, versions.router, jobs.router):
+    for router in (
+        system.router,
+        auth.router,
+        documents.router,
+        versions.router,
+        inspections.router,
+        jobs.router,
+    ):
         app.include_router(router, prefix="/api/v1")
     return app

@@ -15,7 +15,10 @@ async def test_health_ready_capabilities(client: httpx.AsyncClient) -> None:
     caps = (await client.get("/api/v1/capabilities")).json()
     assert caps["product"] == "AKSHARA"
     available = {c["key"] for c in caps["capabilities"] if c["available"]}
-    assert available == {"upload", "versions"}  # nothing beyond Phase 1 claims to work
+    from app.services.capabilities import COMPLETED_PHASE
+
+    assert COMPLETED_PHASE == 3
+    assert available == {"upload", "versions", "preview", "inspect"}  # nothing unbuilt claims to work
 
 
 async def test_error_envelope_and_request_id(client: httpx.AsyncClient) -> None:

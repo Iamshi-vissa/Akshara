@@ -13,16 +13,12 @@ pytestmark = pytest.mark.integration
 
 
 async def upload(client: httpx.AsyncClient, headers: dict[str, str], path: Path) -> dict:
-    r = await client.post(
-        "/api/v1/documents", headers=headers, files={"file": (path.name, path.read_bytes())}
-    )
+    r = await client.post("/api/v1/documents", headers=headers, files={"file": (path.name, path.read_bytes())})
     assert r.status_code == 201, r.text
     return r.json()
 
 
-async def test_docx_analysis_end_to_end(
-    client: httpx.AsyncClient, fixture_docs: dict[str, Path]
-) -> None:
+async def test_docx_analysis_end_to_end(client: httpx.AsyncClient, fixture_docs: dict[str, Path]) -> None:
     headers = await register_and_login(client)
     doc = await upload(client, headers, fixture_docs["clean_docx"])
     assert doc["job_id"]
@@ -63,14 +59,10 @@ async def test_docx_analysis_end_to_end(
     assert len(pages) == s["rendered_pages"] and pages[0]["width_pt"] == 612.0
     img = await client.get(f"/api/v1/versions/{v['id']}/pages/0/image", headers=headers)
     assert img.status_code == 200 and img.content[:8] == b"\x89PNG\r\n\x1a\n"
-    assert (
-        await client.get(f"/api/v1/versions/{v['id']}/pages/99/image", headers=headers)
-    ).status_code == 404
+    assert (await client.get(f"/api/v1/versions/{v['id']}/pages/99/image", headers=headers)).status_code == 404
 
 
-async def test_pdf_structure_is_inferred(
-    client: httpx.AsyncClient, fixture_docs: dict[str, Path]
-) -> None:
+async def test_pdf_structure_is_inferred(client: httpx.AsyncClient, fixture_docs: dict[str, Path]) -> None:
     headers = await register_and_login(client)
     v = (await upload(client, headers, fixture_docs["defective_pdf"]))["current_version"]
     assert v["analysis_status"] == "complete"
@@ -96,18 +88,12 @@ async def test_pptx_slides(client: httpx.AsyncClient, fixture_docs: dict[str, Pa
     assert len(pages) == 3 and abs(pages[0]["width_pt"] - 960.0) < 0.5
 
 
-async def test_reanalyse_and_isolation(
-    client: httpx.AsyncClient, fixture_docs: dict[str, Path]
-) -> None:
+async def test_reanalyse_and_isolation(client: httpx.AsyncClient, fixture_docs: dict[str, Path]) -> None:
     alice = await register_and_login(client, "alice@example.com", "Alice-secret-1")
     v = (await upload(client, alice, fixture_docs["clean_pptx"]))["current_version"]
     r = await client.post(f"/api/v1/versions/{v['id']}/analyse", headers=alice)
     assert r.status_code == 202 and r.json()["status"] == "succeeded"
     bob = await register_and_login(client, "bob@example.com", "Bob-secret-22")
     for path in ("adm", "outline", "pages", "pages/0/image"):
-        assert (
-            await client.get(f"/api/v1/versions/{v['id']}/{path}", headers=bob)
-        ).status_code == 404
-    assert (
-        await client.post(f"/api/v1/versions/{v['id']}/analyse", headers=bob)
-    ).status_code == 404
+        assert (await client.get(f"/api/v1/versions/{v['id']}/{path}", headers=bob)).status_code == 404
+    assert (await client.post(f"/api/v1/versions/{v['id']}/analyse", headers=bob)).status_code == 404

@@ -24,9 +24,7 @@ async def upload(
     title: str | None = None,
 ) -> httpx.Response:
     form = {"title": title} if title else None
-    return await client.post(
-        "/api/v1/documents", headers=headers, files={"file": (name, data)}, data=form
-    )
+    return await client.post("/api/v1/documents", headers=headers, files={"file": (name, data)}, data=form)
 
 
 async def test_upload_list_get_download_byte_identical(client: httpx.AsyncClient) -> None:
@@ -67,9 +65,7 @@ async def test_custom_title_and_rename(client: httpx.AsyncClient) -> None:
     headers = await register_and_login(client)
     doc = (await upload(client, headers, "a.docx", f.ooxml_bytes(), title="Thesis draft")).json()
     assert doc["title"] == "Thesis draft"
-    r = await client.patch(
-        f"/api/v1/documents/{doc['id']}", headers=headers, json={"title": "Final"}
-    )
+    r = await client.patch(f"/api/v1/documents/{doc['id']}", headers=headers, json={"title": "Final"})
     assert r.status_code == 200 and r.json()["title"] == "Final"
 
 
@@ -132,9 +128,7 @@ async def test_user_isolation_returns_404(client: httpx.AsyncClient) -> None:
     r = await client.patch(f"/api/v1/documents/{doc['id']}", headers=bob, json={"title": "pwned"})
     assert r.status_code == 404
     assert (await client.get("/api/v1/documents", headers=bob)).json()["items"] == []
-    assert (await client.get(f"/api/v1/documents/{doc['id']}", headers=alice)).json()[
-        "title"
-    ] == "a"
+    assert (await client.get(f"/api/v1/documents/{doc['id']}", headers=alice)).json()["title"] == "a"
 
 
 async def test_soft_delete_hides_but_keeps_original(client: httpx.AsyncClient, settings) -> None:
@@ -185,19 +179,13 @@ async def test_pagination_and_search(client: httpx.AsyncClient) -> None:
     await upload(client, headers, "100%_done.pdf", f.pdf_bytes() + b"x")
     page1 = (await client.get("/api/v1/documents?limit=4", headers=headers)).json()
     assert len(page1["items"]) == 4 and page1["next_cursor"]
-    page2 = (
-        await client.get(
-            f"/api/v1/documents?limit=4&cursor={page1['next_cursor']}", headers=headers
-        )
-    ).json()
+    page2 = (await client.get(f"/api/v1/documents?limit=4&cursor={page1['next_cursor']}", headers=headers)).json()
     assert len(page2["items"]) == 2 and page2["next_cursor"] is None
     ids = {d["id"] for d in page1["items"] + page2["items"]}
     assert len(ids) == 6
     hits = (await client.get("/api/v1/documents?q=100%25_", headers=headers)).json()["items"]
     assert [d["title"] for d in hits] == ["100%_done"]  # % and _ are literal, not wildcards
-    assert (
-        len((await client.get("/api/v1/documents?kind=docx", headers=headers)).json()["items"]) == 0
-    )
+    assert len((await client.get("/api/v1/documents?kind=docx", headers=headers)).json()["items"]) == 0
 
 
 async def test_audit_trail_records_actions(client: httpx.AsyncClient, settings) -> None:
@@ -207,17 +195,14 @@ async def test_audit_trail_records_actions(client: httpx.AsyncClient, settings) 
     await upload(client, headers, "bad.docm", b"x")
     engine = create_async_engine(settings.database_url)
     async with engine.connect() as conn:
-        actions = (
-            (await conn.execute(text("select action from audit_events order by id")))
-            .scalars()
-            .all()
-        )
+        actions = (await conn.execute(text("select action from audit_events order by id"))).scalars().all()
     await engine.dispose()
     assert actions == [
         "auth.register",
         "auth.login",
         "document.uploaded",
         "document.analysis_requested",
+        "document.inspected",
         "document.downloaded",
         "document.upload_rejected",
     ]

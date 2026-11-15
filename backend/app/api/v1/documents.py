@@ -103,16 +103,12 @@ async def upload_document(
 ) -> DocumentOut:
     declared = request.headers.get("content-length")
     if declared and declared.isdigit() and int(declared) > limits.max_bytes + 64 * 1024:
-        raise FileTooLargeError(
-            f"The file is larger than the {limits.max_bytes // (1024 * 1024)} MB limit."
-        )
+        raise FileTooLargeError(f"The file is larger than the {limits.max_bytes // (1024 * 1024)} MB limit.")
     if not file.filename:
         raise AppError("A file name is required.", code="MISSING_FILENAME")
     temp = await _spool(file, limits.max_bytes)
     try:
-        view = await DocumentService(session, storage, limits).upload(
-            user.id, temp, file.filename, title, ip=client.ip
-        )
+        view = await DocumentService(session, storage, limits).upload(user.id, temp, file.filename, title, ip=client.ip)
     finally:
         temp.unlink(missing_ok=True)
     # Start analysis (parse + render) in the background.
@@ -151,9 +147,7 @@ async def list_documents(
 async def document_stats(
     user: CurrentUser, session: SessionDep, storage: StorageDep, limits: LimitsDep
 ) -> DocumentStats:
-    return DocumentStats.model_validate(
-        await DocumentService(session, storage, limits).stats(user.id)
-    )
+    return DocumentStats.model_validate(await DocumentService(session, storage, limits).stats(user.id))
 
 
 @router.get("/documents/{document_id}", response_model=DocumentOut)

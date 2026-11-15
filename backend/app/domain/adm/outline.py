@@ -82,10 +82,7 @@ class OutlineNode:
 
 def outline(doc: AdmDocument) -> list[OutlineNode]:
     if doc.slides:
-        return [
-            OutlineNode(id=s.id, text=s.title or f"Slide {s.index + 1}", level=1, role="slide")
-            for s in doc.slides
-        ]
+        return [OutlineNode(id=s.id, text=s.title or f"Slide {s.index + 1}", level=1, role="slide") for s in doc.slides]
     roots: list[OutlineNode] = []
     stack: list[OutlineNode] = []
     for h in doc.headings():

@@ -3,6 +3,7 @@ import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router';
 
 import { AppShell } from '@/components/layout/AppShell';
 import { Wordmark } from '@/components/ui/Wordmark';
+import { workspaceTabs } from '@/features/registry';
 import { useAuth } from '@/lib/auth';
 
 // Route-level code splitting: the WebGL sign-in hero and each page load on demand.
@@ -13,6 +14,7 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage').then((m) => ({ 
 const LibraryPage = lazy(() => import('@/pages/LibraryPage').then((m) => ({ default: m.LibraryPage })));
 const DocumentPage = lazy(() => import('@/pages/DocumentPage').then((m) => ({ default: m.DocumentPage })));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage').then((m) => ({ default: m.SettingsPage })));
+const QualityPage = lazy(() => import('@/pages/QualityPage').then((m) => ({ default: m.QualityPage })));
 const ComingSoonPage = lazy(() => import('@/pages/ComingSoonPage').then((m) => ({ default: m.ComingSoonPage })));
 const NotFoundPage = lazy(() => import('@/pages/ComingSoonPage').then((m) => ({ default: m.NotFoundPage })));
 
@@ -54,11 +56,10 @@ export function App() {
         <Route element={<AppShell />}>
           <Route index element={page(<DashboardPage />)} />
           <Route path="documents" element={page(<LibraryPage />)} />
-          <Route path="documents/:id" element={page(<DocumentPage />)} />
+          <Route path="documents/:id" element={page(<DocumentPage extraTabs={workspaceTabs} />)} />
           <Route path="settings" element={page(<SettingsPage />)} />
-          <Route path="inspect" element={page(<ComingSoonPage capability="inspect" />)} />
           <Route path="standards" element={page(<ComingSoonPage capability="standards" />)} />
-          <Route path="quality" element={page(<ComingSoonPage capability="visual" />)} />
+          <Route path="quality" element={page(<QualityPage />)} />
           <Route path="edit" element={page(<ComingSoonPage capability="edit" />)} />
           <Route path="create" element={page(<ComingSoonPage capability="create" />)} />
           <Route path="presentations" element={page(<ComingSoonPage capability="presentations" />)} />

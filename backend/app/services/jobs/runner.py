@@ -68,9 +68,7 @@ async def run_job(
         await s.commit()
         job_type, params, owner = job.type, dict(job.params or {}), job.owner_id
 
-    ctx = JobContext(
-        settings=settings, sessionmaker=maker, storage=storage, job_id=job_id, owner_id=owner
-    )
+    ctx = JobContext(settings=settings, sessionmaker=maker, storage=storage, job_id=job_id, owner_id=owner)
     fn = HANDLERS.get(job_type)
     try:
         if fn is None:

@@ -32,12 +32,8 @@ def _set_refresh_cookie(response: Response, tokens: IssuedTokens, settings: Sett
     status_code=status.HTTP_201_CREATED,
     dependencies=[rate_limit("register")],
 )
-async def register(
-    body: RegisterRequest, session: SessionDep, settings: SettingsDep, client: ClientDep
-) -> UserOut:
-    user = await AuthService(session, settings).register(
-        body.email, body.password, body.display_name, client
-    )
+async def register(body: RegisterRequest, session: SessionDep, settings: SettingsDep, client: ClientDep) -> UserOut:
+    user = await AuthService(session, settings).register(body.email, body.password, body.display_name, client)
     return UserOut.model_validate(user)
 
 
@@ -92,9 +88,7 @@ async def me(user: CurrentUser) -> UserOut:
 
 
 @router.patch("/me", response_model=UserOut)
-async def update_me(
-    body: UserUpdate, user: CurrentUser, session: SessionDep, settings: SettingsDep
-) -> UserOut:
+async def update_me(body: UserUpdate, user: CurrentUser, session: SessionDep, settings: SettingsDep) -> UserOut:
     updated = await AuthService(session, settings).update_profile(
         user,
         display_name=body.display_name,

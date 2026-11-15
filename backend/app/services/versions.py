@@ -23,9 +23,7 @@ class VersionService:
         self.session = session
         self.storage = storage
 
-    async def owned(
-        self, owner_id: uuid.UUID, version_id: uuid.UUID
-    ) -> tuple[DocumentVersion, Document]:
+    async def owned(self, owner_id: uuid.UUID, version_id: uuid.UUID) -> tuple[DocumentVersion, Document]:
         row = (
             await self.session.execute(
                 select(DocumentVersion, Document)
@@ -62,18 +60,14 @@ class VersionService:
     async def pages(self, owner_id: uuid.UUID, version_id: uuid.UUID) -> list[RenderPage]:
         await self.owned(owner_id, version_id)
         rows = await self.session.scalars(
-            select(RenderPage)
-            .where(RenderPage.version_id == version_id)
-            .order_by(RenderPage.page_index)
+            select(RenderPage).where(RenderPage.version_id == version_id).order_by(RenderPage.page_index)
         )
         return list(rows.all())
 
     async def page_image(self, owner_id: uuid.UUID, version_id: uuid.UUID, index: int) -> bytes:
         await self.owned(owner_id, version_id)
         page = await self.session.scalar(
-            select(RenderPage).where(
-                RenderPage.version_id == version_id, RenderPage.page_index == index
-            )
+            select(RenderPage).where(RenderPage.version_id == version_id, RenderPage.page_index == index)
         )
         if page is None:
             raise NotFoundError("Page not found.", code="PAGE_NOT_FOUND")

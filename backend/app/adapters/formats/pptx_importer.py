@@ -65,12 +65,7 @@ def import_pptx(path: Path) -> AdmDocument:
         title = None
         for shp in slide.shapes:
             bbox = None
-            if (
-                shp.left is not None
-                and shp.top is not None
-                and shp.width is not None
-                and shp.height is not None
-            ):
+            if shp.left is not None and shp.top is not None and shp.width is not None and shp.height is not None:
                 bbox = (
                     _pt(shp.left),
                     _pt(shp.top),
@@ -84,9 +79,7 @@ def import_pptx(path: Path) -> AdmDocument:
             if shp.has_text_frame:
                 kind = "text"
                 tf = shp.text_frame
-                autofit = (
-                    AUTOFIT.get(tf.auto_size, "unknown") if tf.auto_size is not None else "unknown"
-                )
+                autofit = AUTOFIT.get(tf.auto_size, "unknown") if tf.auto_size is not None else "unknown"
                 for pi, para in enumerate(tf.paragraphs):
                     runs = [
                         Run(

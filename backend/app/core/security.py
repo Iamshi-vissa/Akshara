@@ -51,9 +51,7 @@ def create_access_token(user_id: uuid.UUID, settings: Settings) -> tuple[str, in
         "typ": "access",
         "iss": "akshara",
     }
-    token = jwt.encode(
-        claims, settings.jwt_secret.get_secret_value(), algorithm=settings.jwt_algorithm
-    )
+    token = jwt.encode(claims, settings.jwt_secret.get_secret_value(), algorithm=settings.jwt_algorithm)
     return token, ttl
 
 

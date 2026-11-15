@@ -17,6 +17,10 @@ export type Capability = components['schemas']['Capability'];
 export type Capabilities = components['schemas']['CapabilitiesOut'];
 export type TokenResponse = components['schemas']['TokenResponse'];
 export type DocumentKind = DocumentOut['kind'];
+export type FindingOut = components['schemas']['FindingOut'];
+export type InspectionRun = components['schemas']['InspectionWithFindings'];
+export type QualityRow = components['schemas']['QualityRow'];
+export type JobOut = components['schemas']['JobOut'];
 
 export const API_BASE = '/api/v1';
 

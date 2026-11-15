@@ -11,9 +11,7 @@ import logging
 import sys
 from datetime import UTC, datetime
 
-request_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
-    "request_id", default=None
-)
+request_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar("request_id", default=None)
 
 
 class JsonFormatter(logging.Formatter):
