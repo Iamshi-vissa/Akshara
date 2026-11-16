@@ -55,6 +55,7 @@ def migrated_db() -> str:
 @pytest.fixture
 def settings(migrated_db: str, tmp_path: Path) -> Settings:
     return Settings(
+        _env_file=None,  # hermetic: never pick up a developer's local .env
         environment="test",
         database_url=migrated_db,
         redis_url=TEST_REDIS,
