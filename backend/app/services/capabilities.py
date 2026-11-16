@@ -11,7 +11,7 @@ from __future__ import annotations
 from app.core.config import Settings
 from app.schemas.system import Capability
 
-COMPLETED_PHASE = 5
+COMPLETED_PHASE = 6
 
 _ALL: list[tuple[str, str, int, str]] = [
     ("upload", "Secure upload & library", 1, "DOCX, PDF and PPTX with content-based validation."),

@@ -452,15 +452,10 @@ async def _scores(s: AsyncSession, version_id: uuid.UUID) -> dict[str, Any]:
 
 
 async def _analyse_and_validate(ctx: JobContext, version_id: uuid.UUID, standard_version_id: uuid.UUID | None) -> None:
+    """Analysis inspects and re-validates against the document's applied standard itself."""
     from app.services.processing.analysis import analyse
-    from app.services.standards.service import run_validation
 
     await analyse(ctx, {"version_id": str(version_id)})
-    if standard_version_id is not None:
-        try:
-            await run_validation(ctx, version_id, standard_version_id)
-        except NotFoundError:
-            pass  # the standard was deleted; the inspection result still stands
 
 
 @handler("apply_changeset")

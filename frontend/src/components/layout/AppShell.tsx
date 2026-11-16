@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/auth';
 const NAV: { to: string; label: string; icon: IconName; capability?: string }[] = [
   { to: '/', label: 'Dashboard', icon: 'dashboard' },
   { to: '/documents', label: 'Library', icon: 'library' },
+  { to: '/create', label: 'Create', icon: 'create', capability: 'create' },
   { to: '/quality', label: 'Quality', icon: 'quality', capability: 'inspect' },
   { to: '/standards', label: 'Standards', icon: 'standard', capability: 'standards' },
 ];

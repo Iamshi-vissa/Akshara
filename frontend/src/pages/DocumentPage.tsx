@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { api, ApiError, downloadVersion, json, type DocumentOut, type VersionOut } from '@/api/client';
+import { api, ApiError, json, type DocumentOut, type VersionOut } from '@/api/client';
 import { runJob } from '@/api/jobs';
 import { Badge, KindBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -10,6 +10,7 @@ import { Dialog } from '@/components/ui/Dialog';
 import { Icon } from '@/components/ui/Icon';
 import { Tabs, type TabDef } from '@/components/ui/Tabs';
 import { VersionHistory } from '@/features/changes/VersionHistory';
+import { ExportMenu } from '@/features/workspace/ExportMenu';
 import { AnalysisStatus, PreviewPanel, SummaryStats } from '@/features/workspace/AnalysisPanel';
 import { describeWarning, formatBytes, formatDate } from '@/lib/format';
 
@@ -39,7 +40,6 @@ export function DocumentPage({ extraTabs = [] }: { extraTabs?: WorkspaceTab[] })
   const [params, setParams] = useSearchParams();
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   const doc = useQuery({
     queryKey: ['documents', id],
@@ -72,15 +72,6 @@ export function DocumentPage({ extraTabs = [] }: { extraTabs?: WorkspaceTab[] })
     mutationFn: (versionId: string) => runJob(`/versions/${versionId}/analyse`),
     onSettled: () => void queryClient.invalidateQueries({ queryKey: ['documents', id] }),
   });
-
-  async function download(v: VersionOut, name: string) {
-    setDownloadError(null);
-    try {
-      await downloadVersion(v.id, name);
-    } catch (e) {
-      setDownloadError(e instanceof ApiError ? e.message : 'Download failed.');
-    }
-  }
 
   if (doc.isPending) return <div className="surface mx-auto h-96 max-w-6xl animate-pulse" />;
   if (doc.isError) {
@@ -129,6 +120,7 @@ export function DocumentPage({ extraTabs = [] }: { extraTabs?: WorkspaceTab[] })
             <Badge tone="ok">
               <Icon name="lock" className="size-3" /> Original preserved
             </Badge>
+            {d.origin === 'generated' && <Badge tone="gold">Created in AKSHARA</Badge>}
           </div>
           {editing ? (
             <form
@@ -155,17 +147,12 @@ export function DocumentPage({ extraTabs = [] }: { extraTabs?: WorkspaceTab[] })
           {rename.isError && <p className="mt-2 text-sm text-sev-critical">{rename.error.message}</p>}
         </div>
         <div className="flex gap-2">
-          {v && (
-            <Button onClick={() => void download(v, d.original_filename)}>
-              <Icon name="download" /> Download
-            </Button>
-          )}
+          {v && <ExportMenu doc={d} version={v} />}
           <Button variant="danger" onClick={() => setConfirmDelete(true)} aria-label="Delete document">
             <Icon name="trash" />
           </Button>
         </div>
       </header>
-      {downloadError && <p role="alert" className="text-sm text-sev-critical">{downloadError}</p>}
 
       {d.safety_warnings.length > 0 && (
         <section className="rounded-2xl border border-sev-medium/30 bg-sev-medium/5 p-5" aria-labelledby="sec-h">

@@ -59,7 +59,7 @@ def get_storage(state: StateDep) -> BlobStorage:
 StorageDep = Annotated[BlobStorage, Depends(get_storage)]
 
 
-def get_limits(settings: SettingsDep) -> SafetyLimits:
+def get_limits(settings: Settings) -> SafetyLimits:
     return SafetyLimits(
         max_bytes=settings.max_upload_bytes,
         max_uncompressed_bytes=settings.max_ooxml_uncompressed_bytes,
@@ -68,7 +68,11 @@ def get_limits(settings: SettingsDep) -> SafetyLimits:
     )
 
 
-LimitsDep = Annotated[SafetyLimits, Depends(get_limits)]
+def _limits_dep(settings: SettingsDep) -> SafetyLimits:
+    return get_limits(settings)
+
+
+LimitsDep = Annotated[SafetyLimits, Depends(_limits_dep)]
 
 
 def client_info(request: Request) -> ClientInfo:

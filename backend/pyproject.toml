@@ -67,6 +67,8 @@ ignore = ["S101", "B008", "RUF012"]
 "app/domain/inspection/checks/**" = ["E501"]
 "app/domain/correction/**" = ["E501", "RUF001"]
 "app/services/changes/**" = ["E501"]
+"app/services/generation/**" = ["E501"]
+"app/api/**" = ["E501"]
 
 [tool.mypy]
 python_version = "3.12"

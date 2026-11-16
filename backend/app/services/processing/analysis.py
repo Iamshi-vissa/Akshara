@@ -121,12 +121,24 @@ async def analyse(ctx: JobContext, params: dict[str, Any]) -> dict[str, Any]:
         await s.commit()
         if version.analysis_status == "failed":
             raise AppError("The document could not be analysed: " + "; ".join(warnings), code="ANALYSIS_FAILED")
-    # Inspect straight away so the workspace opens with findings (Phase 3).
+    # Inspect straight away so the workspace opens with findings (Phase 3), then re-validate
+    # against the document's standard. Doing both here guarantees they run *after* parsing,
+    # whatever executor is used (separately queued jobs could race the analysis).
     run_id = None
     if adm is not None:
         from app.services.inspections.service import run_inspection
+        from app.services.standards.service import run_validation
 
         run_id = await run_inspection(ctx, version_id)
+        async with ctx.sessionmaker() as s:
+            v = await s.get(DocumentVersion, version_id)
+            d = await s.get(Document, v.document_id) if v else None
+            standard_id = d.applied_standard_version_id if d else None
+        if standard_id is not None:
+            try:
+                await run_validation(ctx, version_id, standard_id)
+            except NotFoundError:
+                pass  # the standard was deleted; inspection results still stand
     return {
         "version_id": str(version_id),
         "summary": info,

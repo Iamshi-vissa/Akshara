@@ -3,6 +3,7 @@
 from app.db.models.audit import AuditEvent
 from app.db.models.changeset import ChangeProposal, ChangeSet
 from app.db.models.document import Blob, Document, DocumentVersion, RenderPage
+from app.db.models.generation import Export, GenerationSession
 from app.db.models.inspection import FindingRow, InspectionRun
 from app.db.models.job import Job
 from app.db.models.standard import Standard, StandardVersion
@@ -15,7 +16,9 @@ __all__ = [
     "ChangeSet",
     "Document",
     "DocumentVersion",
+    "Export",
     "FindingRow",
+    "GenerationSession",
     "InspectionRun",
     "Job",
     "RefreshToken",
