@@ -579,6 +579,126 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents/{document_id}/changesets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Changesets */
+        get: operations["list_changesets_api_v1_documents__document_id__changesets_get"];
+        put?: never;
+        /** Create Changeset */
+        post: operations["create_changeset_api_v1_documents__document_id__changesets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/changesets/{changeset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Changeset */
+        get: operations["get_changeset_api_v1_changesets__changeset_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/changesets/{changeset_id}/decisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide */
+        post: operations["decide_api_v1_changesets__changeset_id__decisions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/changesets/{changeset_id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply */
+        post: operations["apply_api_v1_changesets__changeset_id__apply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/changesets/{changeset_id}/discard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Discard */
+        post: operations["discard_api_v1_changesets__changeset_id__discard_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/revert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revert */
+        post: operations["revert_api_v1_documents__document_id__revert_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/diff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Version Diff */
+        get: operations["version_diff_api_v1_documents__document_id__diff_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/jobs": {
         parameters: {
             query?: never;
@@ -652,6 +772,68 @@ export interface components {
             phase: number;
             /** Note */
             note: string;
+        };
+        /** ChangeSetCreate */
+        ChangeSetCreate: {
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "autocorrect" | "grammar" | "ai_edit" | "manual";
+            /** Edits */
+            edits?: components["schemas"]["TextEdit"][];
+            /** Node Ids */
+            node_ids?: string[];
+            /** Operation */
+            operation?: string | null;
+            /** Tone */
+            tone?: string | null;
+        };
+        /** ChangeSetOut */
+        ChangeSetOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Document Id
+             * Format: uuid
+             */
+            document_id: string;
+            /**
+             * Base Version Id
+             * Format: uuid
+             */
+            base_version_id: string;
+            /** Source */
+            source: string;
+            /** Status */
+            status: string;
+            /** Summary */
+            summary: {
+                [key: string]: unknown;
+            };
+            /** Result Version Id */
+            result_version_id: string | null;
+            /** Error Message */
+            error_message: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Applied At */
+            applied_at: string | null;
+            /** Proposals */
+            proposals?: components["schemas"]["ProposalOut"][];
+        };
+        /** Decisions */
+        Decisions: {
+            /** Decisions */
+            decisions: {
+                [key: string]: "pending" | "accepted" | "rejected";
+            };
         };
         /** DocumentOut */
         DocumentOut: {
@@ -889,6 +1071,40 @@ export interface components {
             /** Next Cursor */
             next_cursor?: string | null;
         };
+        /** ProposalOut */
+        ProposalOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Ordinal */
+            ordinal: number;
+            /** Title */
+            title: string;
+            /** Rationale */
+            rationale: string;
+            /** Ops */
+            ops: {
+                [key: string]: unknown;
+            }[];
+            /** Risk */
+            risk: string;
+            /** Before */
+            before: string;
+            /** After */
+            after: string;
+            /** Node Ids */
+            node_ids: string[];
+            /** Finding Ids */
+            finding_ids: string[];
+            /** Rule Id */
+            rule_id: string | null;
+            /** Origin */
+            origin: string;
+            /** Decision */
+            decision: string;
+        };
         /** QualityRow */
         QualityRow: {
             /**
@@ -945,6 +1161,14 @@ export interface components {
             password: string;
             /** Display Name */
             display_name?: string | null;
+        };
+        /** RevertRequest */
+        RevertRequest: {
+            /**
+             * Version Id
+             * Format: uuid
+             */
+            version_id: string;
         };
         /** RulesUpdate */
         RulesUpdate: {
@@ -1043,6 +1267,13 @@ export interface components {
             created_at?: string | null;
             /** Published At */
             published_at?: string | null;
+        };
+        /** TextEdit */
+        TextEdit: {
+            /** Node Id */
+            node_id: string;
+            /** After */
+            after: string;
         };
         /** TokenResponse */
         TokenResponse: {
@@ -2308,6 +2539,269 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_changesets_api_v1_documents__document_id__changesets_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeSetOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_changeset_api_v1_documents__document_id__changesets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeSetCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeSetOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_changeset_api_v1_changesets__changeset_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                changeset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeSetOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_api_v1_changesets__changeset_id__decisions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                changeset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Decisions"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangeSetOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    apply_api_v1_changesets__changeset_id__apply_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                changeset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    discard_api_v1_changesets__changeset_id__discard_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                changeset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revert_api_v1_documents__document_id__revert_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RevertRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    version_diff_api_v1_documents__document_id__diff_get: {
+        parameters: {
+            query: {
+                from_version: string;
+                to_version: string;
+            };
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Validation Error */

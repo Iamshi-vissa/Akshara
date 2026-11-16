@@ -8,6 +8,12 @@ x-backend-env: &backend-env
   AKSHARA_REDIS_URL: redis://redis:6379/0
   AKSHARA_JWT_SECRET: ${AKSHARA_JWT_SECRET:?set AKSHARA_JWT_SECRET in .env}
   AKSHARA_COOKIE_SECURE: ${AKSHARA_COOKIE_SECURE:-false}
+  AKSHARA_LANGUAGETOOL_URL: http://languagetool:8010
+  # AI editing/generation stay off unless you opt in: set AKSHARA_LLM_PROVIDER=anthropic
+  # and ANTHROPIC_API_KEY in .env (users must also allow external AI in Settings).
+  AKSHARA_LLM_PROVIDER: ${AKSHARA_LLM_PROVIDER:-none}
+  AKSHARA_LLM_MODEL: ${AKSHARA_LLM_MODEL:-claude-opus-5-5}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
 
 services:
   db:
@@ -30,6 +36,13 @@ services:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       retries: 20
+
+  languagetool:
+    # Self-hosted grammar checking (decision D7): document text never leaves your servers.
+    image: erikvl87/languagetool:latest
+    environment:
+      Java_Xms: 256m
+      Java_Xmx: 1g
 
   api:
     image: akshara-api:dev

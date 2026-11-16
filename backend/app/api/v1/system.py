@@ -6,7 +6,7 @@ from sqlalchemy import text
 from app import __version__
 from app.api.deps import StateDep
 from app.schemas.system import CapabilitiesOut, ReadyOut
-from app.services.capabilities import CAPABILITIES
+from app.services.capabilities import capabilities_for
 
 router = APIRouter(tags=["system"])
 
@@ -39,5 +39,5 @@ async def ready(state: StateDep) -> ReadyOut:
 
 
 @router.get("/capabilities", response_model=CapabilitiesOut)
-async def capabilities() -> CapabilitiesOut:
-    return CapabilitiesOut(version=__version__, capabilities=CAPABILITIES)
+async def capabilities(state: StateDep) -> CapabilitiesOut:
+    return CapabilitiesOut(version=__version__, capabilities=capabilities_for(state.settings))

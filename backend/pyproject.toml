@@ -23,6 +23,7 @@ dependencies = [
     "python-pptx>=1.0.2",
     "pymupdf>=2.1",
     "httpx>=0.28.1",
+    "anthropic>=2.9.0",
 ]
 
 [dependency-groups]
@@ -64,6 +65,8 @@ ignore = ["S101", "B008", "RUF012"]
 "migrations/**" = ["E501"]
 # Checks and rules contain long, user-facing sentences; wrapping them hurts readability.
 "app/domain/inspection/checks/**" = ["E501"]
+"app/domain/correction/**" = ["E501", "RUF001"]
+"app/services/changes/**" = ["E501"]
 
 [tool.mypy]
 python_version = "3.12"

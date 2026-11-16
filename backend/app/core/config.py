@@ -39,6 +39,14 @@ class Settings(BaseSettings):
     # (tests and single-process development). Same job code either way.
     job_mode: Literal["celery", "inline"] = "celery"
 
+    # --- Language services (all optional; features stay unavailable until configured) ---
+    # Grammar: a self-hosted LanguageTool server (decision D7), e.g. http://languagetool:8010
+    languagetool_url: str | None = None
+    # AI editing/generation: "anthropic" uses the Anthropic API (key from ANTHROPIC_API_KEY or an
+    # `ant auth login` profile). Users must also opt in (allow_external_llm) before text is sent.
+    llm_provider: Literal["none", "anthropic"] = "none"
+    llm_model: str = "claude-opus-5-5"
+
     # --- Storage -----------------------------------------------------------------------
     storage_backend: Literal["local"] = "local"
     storage_root: Path = Path("./var/blobs")

@@ -23,6 +23,8 @@ export type QualityRow = components['schemas']['QualityRow'];
 export type JobOut = components['schemas']['JobOut'];
 export type StandardOut = components['schemas']['StandardOut'];
 export type StandardDetail = components['schemas']['StandardDetail'];
+export type ChangeSetOut = components['schemas']['ChangeSetOut'];
+export type ProposalOut = components['schemas']['ProposalOut'];
 
 export const API_BASE = '/api/v1';
 

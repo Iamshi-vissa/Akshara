@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { Icon } from '@/components/ui/Icon';
 import { Tabs, type TabDef } from '@/components/ui/Tabs';
+import { VersionHistory } from '@/features/changes/VersionHistory';
 import { AnalysisStatus, PreviewPanel, SummaryStats } from '@/features/workspace/AnalysisPanel';
 import { describeWarning, formatBytes, formatDate } from '@/lib/format';
 
@@ -207,30 +208,7 @@ export function DocumentPage({ extraTabs = [] }: { extraTabs?: WorkspaceTab[] })
                     </Meta>
                   </dl>
                 </section>
-                <section aria-labelledby="versions-h">
-                  <h2 id="versions-h" className="mb-4 flex items-center gap-2 font-serif text-2xl font-semibold">
-                    <Icon name="history" className="size-5 text-gold" /> Version history
-                  </h2>
-                  <ol className="surface divide-y divide-ink-700/70">
-                    {(versions.data ?? []).map((ver) => (
-                      <li key={ver.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
-                        <span className="grid size-9 place-items-center rounded-full border border-gold/30 bg-gold-soft font-mono text-sm text-gold">{ver.number}</span>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium">
-                            {ver.created_by === 'upload' ? 'Original upload' : ver.created_by === 'changeset' ? 'Approved corrections' : ver.created_by}
-                          </p>
-                          <p className="text-xs text-paper-faint">
-                            {formatDate(ver.created_at)} · {formatBytes(ver.size_bytes)} · <span className="font-mono">{ver.sha256.slice(0, 12)}…</span>
-                          </p>
-                        </div>
-                        <Button variant="secondary" size="sm" onClick={() => void download(ver, d.original_filename)}>
-                          <Icon name="download" /> Download
-                        </Button>
-                      </li>
-                    ))}
-                    {versions.isPending && <li className="h-16 animate-pulse" />}
-                  </ol>
-                </section>
+                <VersionHistory doc={d} versions={versions.data ?? []} />
               </div>
             )}
           </div>

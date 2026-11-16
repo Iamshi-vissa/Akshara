@@ -1,5 +1,7 @@
 import { runJob } from '@/api/jobs';
 import { FindingsPanel } from '@/features/inspection/FindingsPanel';
+import { ChangesPanel } from '@/features/changes/ChangesPanel';
+import { EditPanel } from '@/features/changes/EditPanel';
 import { CompliancePanel } from '@/features/standards/CompliancePanel';
 import type { WorkspaceTab } from '@/pages/DocumentPage';
 
@@ -21,5 +23,15 @@ export const workspaceTabs: WorkspaceTab[] = [
     key: 'compliance',
     label: 'Compliance',
     render: (doc, version) => <CompliancePanel doc={doc} version={version} />,
+  },
+  {
+    key: 'changes',
+    label: 'Changes',
+    render: (doc, version) => <ChangesPanel doc={doc} version={version} />,
+  },
+  {
+    key: 'edit',
+    label: 'Edit',
+    render: (doc, version) => <EditPanel doc={doc} version={version} />,
   },
 ];

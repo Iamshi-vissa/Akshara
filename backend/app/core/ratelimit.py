@@ -7,7 +7,7 @@ exists for single-process development and unit tests.
 from __future__ import annotations
 
 import time
-from collections import defaultdict
+from collections import defaultdict, deque
 from typing import Protocol
 
 from redis.asyncio import Redis
@@ -20,13 +20,18 @@ class RateLimiter(Protocol):
 
 
 class MemoryRateLimiter:
+    """Sliding-window limiter (no burst at window boundaries). Single process only."""
+
     def __init__(self) -> None:
-        self._counts: dict[tuple[str, int], int] = defaultdict(int)
+        self._hits: dict[str, deque[float]] = defaultdict(deque)
 
     async def hit(self, key: str, limit: int, window_seconds: int) -> bool:
-        window = int(time.time() // window_seconds)
-        self._counts[(key, window)] += 1
-        return self._counts[(key, window)] <= limit
+        now = time.monotonic()
+        q = self._hits[key]
+        while q and q[0] <= now - window_seconds:
+            q.popleft()
+        q.append(now)
+        return len(q) <= limit
 
 
 class RedisRateLimiter:
