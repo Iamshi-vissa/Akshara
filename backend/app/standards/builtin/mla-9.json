@@ -1,0 +1,371 @@
+{
+  "slug": "mla-9",
+  "name": "MLA 9 (research paper)",
+  "version": "1.0.0",
+  "family": "mla",
+  "description": "Page, spacing and Works Cited rules from the MLA Handbook, 9th edition.",
+  "notice": "Built-in profile. Values were cross-checked against secondary sources. The paragraph-indent rule is omitted because sources disagree.",
+  "rules": [
+    {
+      "id": "page.margin.top",
+      "title": "Top margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.top",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Top margin is {actual}; MLA requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the top margin to 1 in."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Margins",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.bottom",
+      "title": "Bottom margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.bottom",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Bottom margin is {actual}; MLA requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the bottom margin to 1 in."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Margins",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.left",
+      "title": "Left margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.left",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Left margin is {actual}; MLA requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the left margin to 1 in."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Margins",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.right",
+      "title": "Right margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.right",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Right margin is {actual}; MLA requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the right margin to 1 in."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Margins",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "typography.double_spacing",
+      "title": "Double line spacing",
+      "category": "typography",
+      "kind": "hard",
+      "severity": "high",
+      "applies_to": [
+        "docx"
+      ],
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "equals",
+        "property": "line_spacing",
+        "value": 2.0,
+        "tolerance": 0.05
+      },
+      "message": "Line spacing is {actual}; MLA papers are double-spaced throughout, including Works Cited.",
+      "fix": {
+        "strategy": "set_line_spacing",
+        "auto": true,
+        "hint": "Set line spacing to Double (2.0)."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Margins and spacing",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      }
+    },
+    {
+      "id": "typography.body_size",
+      "title": "Standard 12 pt type",
+      "category": "typography",
+      "kind": "soft",
+      "severity": "medium",
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "equals",
+        "property": "size_pt",
+        "value": 12,
+        "unit": "pt",
+        "tolerance": 0.5
+      },
+      "message": "Body text is {actual} pt; MLA recommends a readable font at a standard size such as 12 pt.",
+      "fix": {
+        "strategy": "set_body_font",
+        "auto": true,
+        "hint": "Use a readable font such as Times New Roman at 12 pt."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Font",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.page_numbers",
+      "title": "Page numbers in the header",
+      "category": "page",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "document"
+      },
+      "check": {
+        "op": "equals",
+        "property": "has_page_numbers",
+        "value": true
+      },
+      "message": "No page numbers were found; MLA puts your surname and the page number in the top-right header.",
+      "fix": {
+        "strategy": "add_page_numbers",
+        "auto": true,
+        "hint": "Add “Surname #” in the top-right header."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Running head and page numbers",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.section",
+      "title": "Works Cited section",
+      "category": "references",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "heading",
+        "where": {
+          "role": "references"
+        }
+      },
+      "check": {
+        "op": "present"
+      },
+      "message": "No Works Cited section was found.",
+      "fix": {
+        "hint": "Add a section titled “Works Cited”."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Works Cited",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.label",
+      "title": "Titled “Works Cited”",
+      "category": "references",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "heading",
+        "where": {
+          "role": "references"
+        }
+      },
+      "check": {
+        "op": "matches",
+        "property": "text",
+        "pattern": "^works cited$"
+      },
+      "message": "The source list is titled “{actual}”; MLA uses “Works Cited”.",
+      "fix": {
+        "strategy": "rename_heading",
+        "auto": true,
+        "hint": "Rename the heading to “Works Cited”."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Works Cited",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.alphabetical",
+      "title": "Works Cited in alphabetical order",
+      "category": "references",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "reference_entry"
+      },
+      "check": {
+        "op": "reference_order",
+        "value": "alphabetical"
+      },
+      "message": "Works Cited entries are not alphabetical.",
+      "fix": {
+        "strategy": "sort_references",
+        "auto": true,
+        "hint": "Sort entries alphabetically."
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Works Cited",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university MLA 9 guides (e.g. guides.fscj.edu/MLA9/formatting, library.lapc.edu/mla9/format); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "typography.alignment",
+      "title": "Flush-left text",
+      "category": "typography",
+      "kind": "soft",
+      "severity": "low",
+      "applies_to": [
+        "docx"
+      ],
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "equals",
+        "property": "alignment",
+        "value": "left"
+      },
+      "message": "Text is {actual}-aligned; MLA papers are normally left-aligned.",
+      "fix": {
+        "strategy": "set_alignment",
+        "auto": true
+      },
+      "provenance": {
+        "source": "MLA Handbook, 9th ed. (2021) — Formatting a Research Paper",
+        "locator": "Formatting",
+        "url": "https://style.mla.org/formatting-papers/",
+        "verification": "unverified",
+        "notes": "Common MLA practice; not confirmed in the secondary-source check."
+      }
+    }
+  ]
+}

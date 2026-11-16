@@ -64,6 +64,7 @@ def document_out(view: DocumentView) -> DocumentOut:
         origin=d.origin,
         status=d.status,
         safety_warnings=list(d.safety_warnings or []),
+        applied_standard_version_id=d.applied_standard_version_id,
         current_version=version_out(view.current) if view.current else None,
         created_at=d.created_at,
         updated_at=d.updated_at,

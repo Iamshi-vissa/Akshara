@@ -1,0 +1,600 @@
+{
+  "slug": "ieee-conference-letter",
+  "name": "IEEE conference paper (US Letter)",
+  "version": "1.0.0",
+  "family": "ieee",
+  "description": "Layout, typography and reference rules of the IEEE two-column conference template (US Letter).",
+  "notice": "Built-in profile. Margins and columns were cross-checked against IEEE sample papers; the 10 pt body size is unverified. Always follow your conference's own template.",
+  "rules": [
+    {
+      "id": "page.paper",
+      "title": "US Letter paper",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "paper",
+        "value": "Letter"
+      },
+      "message": "Paper size is {actual}; this profile is for the US Letter template (use the A4 template otherwise).",
+      "fix": {
+        "strategy": "set_paper",
+        "auto": true,
+        "hint": "Use US Letter (8.5 × 11 in)."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Paper size",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.top",
+      "title": "Top margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.top",
+        "value": 0.75,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Top margin is {actual}; IEEE requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the top margin to 0.75 in."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Margins",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.bottom",
+      "title": "Bottom margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.bottom",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Bottom margin is {actual}; IEEE requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the bottom margin to 1 in."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Margins",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.left",
+      "title": "Left margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.left",
+        "value": 0.625,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Left margin is {actual}; IEEE requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the left margin to 0.625 in."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Margins",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.right",
+      "title": "Right margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.right",
+        "value": 0.625,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Right margin is {actual}; IEEE requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the right margin to 0.625 in."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Margins",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.two_columns",
+      "title": "Two-column layout",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "applies_to": [
+        "docx"
+      ],
+      "selector": {
+        "node": "document"
+      },
+      "check": {
+        "op": "equals",
+        "property": "columns",
+        "value": 2
+      },
+      "message": "The body uses {actual} column(s); IEEE conference papers use two columns.",
+      "fix": {
+        "strategy": "set_columns",
+        "auto": true,
+        "hint": "Format the body in two columns."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Columns",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      }
+    },
+    {
+      "id": "typography.body_font",
+      "title": "Times New Roman body text",
+      "category": "typography",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "in_set",
+        "property": "font_family",
+        "values": [
+          "Times New Roman",
+          "Times",
+          "Liberation Serif",
+          "Nimbus Roman"
+        ]
+      },
+      "message": "Body text uses {actual}; IEEE papers use Times New Roman.",
+      "fix": {
+        "strategy": "set_body_font",
+        "auto": true,
+        "hint": "Use Times New Roman."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Font",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "typography.body_size",
+      "title": "10 pt body text",
+      "category": "typography",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "equals",
+        "property": "size_pt",
+        "value": 10,
+        "unit": "pt",
+        "tolerance": 0.25
+      },
+      "message": "Body text is {actual} pt; the IEEE conference template uses 10 pt.",
+      "fix": {
+        "strategy": "set_body_font",
+        "auto": true,
+        "hint": "Use 10 pt body text."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Font size",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "unverified",
+        "notes": "Widely used template value; not confirmed against an official IEEE source in this build."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "typography.justified",
+      "title": "Justified columns",
+      "category": "typography",
+      "kind": "soft",
+      "severity": "low",
+      "applies_to": [
+        "docx"
+      ],
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "equals",
+        "property": "alignment",
+        "value": "justify"
+      },
+      "message": "Text is {actual}-aligned; IEEE columns are left- and right-justified.",
+      "fix": {
+        "strategy": "set_alignment",
+        "auto": true,
+        "hint": "Justify the body text."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Columns",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      }
+    },
+    {
+      "id": "structure.abstract",
+      "title": "Abstract present",
+      "category": "structure",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "heading",
+        "where": {
+          "role": "abstract"
+        }
+      },
+      "check": {
+        "op": "present"
+      },
+      "message": "No abstract was found.",
+      "fix": {
+        "hint": "Start the paper with an Abstract."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Abstract",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "structure.abstract_length",
+      "title": "Abstract length",
+      "category": "structure",
+      "kind": "soft",
+      "severity": "low",
+      "selector": {
+        "node": "section",
+        "where": {
+          "role": "abstract"
+        }
+      },
+      "check": {
+        "op": "max_words",
+        "max": 250
+      },
+      "message": "The abstract has {actual} words; IEEE recommends at most about 250.",
+      "fix": {
+        "hint": "Shorten the abstract."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Abstract",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "unverified",
+        "notes": "Common IEEE guidance; venues set their own limits."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "structure.roman_sections",
+      "title": "Roman-numeral section headings",
+      "category": "structure",
+      "kind": "soft",
+      "severity": "medium",
+      "selector": {
+        "node": "heading",
+        "where": {
+          "level": 1
+        }
+      },
+      "check": {
+        "op": "matches",
+        "property": "text",
+        "pattern": "^([IVXLC]+\\.\\s|abstract|references|acknowledg|appendix|index terms)"
+      },
+      "message": "Section heading “{actual}” is not numbered with a Roman numeral (e.g. “I. INTRODUCTION”).",
+      "fix": {
+        "hint": "Number main sections I., II., III., …"
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Section headings",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.section",
+      "title": "References section",
+      "category": "references",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "heading",
+        "where": {
+          "role": "references"
+        }
+      },
+      "check": {
+        "op": "present"
+      },
+      "message": "No References section was found.",
+      "fix": {
+        "hint": "Add a “References” section."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "References",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.numeric_citations",
+      "title": "Numbered citations in brackets",
+      "category": "references",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "document"
+      },
+      "check": {
+        "op": "citation_style",
+        "value": "numeric"
+      },
+      "message": "In-text citations are {actual}; IEEE uses numbered citations such as [1].",
+      "fix": {
+        "hint": "Cite sources as [1], [2], … in order of first citation."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Citations",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.numeric_order",
+      "title": "References numbered in order",
+      "category": "references",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "reference_entry"
+      },
+      "check": {
+        "op": "reference_order",
+        "value": "numeric"
+      },
+      "message": "Reference entries are not numbered [1], [2], … in order.",
+      "fix": {
+        "strategy": "sort_references",
+        "auto": true,
+        "hint": "List references in numeric order."
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "References",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "figures.label",
+      "title": "Figure captions use “Fig.”",
+      "category": "figures_tables",
+      "kind": "soft",
+      "severity": "low",
+      "selector": {
+        "node": "caption",
+        "where": {
+          "target_kind": "figure"
+        }
+      },
+      "check": {
+        "op": "matches",
+        "property": "label",
+        "pattern": "^fig\\.$"
+      },
+      "message": "Figure caption label is “{actual}”; IEEE uses “Fig.”.",
+      "fix": {
+        "strategy": "relabel_captions",
+        "auto": true,
+        "hint": "Write “Fig. 1.”"
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Figure captions",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "figures.numbering",
+      "title": "Figures numbered consecutively",
+      "category": "figures_tables",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "caption",
+        "where": {
+          "target_kind": "figure"
+        }
+      },
+      "check": {
+        "op": "sequence",
+        "property": "number"
+      },
+      "message": "Figure numbering is not consecutive (found {actual}).",
+      "fix": {
+        "strategy": "renumber_captions",
+        "auto": true
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Figure captions",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "tables.roman_numbering",
+      "title": "Tables numbered with Roman numerals",
+      "category": "figures_tables",
+      "kind": "soft",
+      "severity": "low",
+      "selector": {
+        "node": "caption",
+        "where": {
+          "target_kind": "table"
+        }
+      },
+      "check": {
+        "op": "sequence",
+        "property": "number",
+        "pattern": "[IVXLC]+"
+      },
+      "message": "Table number {actual} should be a Roman numeral (TABLE I, TABLE II, …).",
+      "fix": {
+        "strategy": "renumber_captions",
+        "auto": true
+      },
+      "provenance": {
+        "source": "IEEE conference paper template (US Letter) and IEEE author guidelines",
+        "locator": "Table captions",
+        "url": "https://www.ieee.org/conferences/publishing/templates.html",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against IEEE sample papers (e.g. ewh.ieee.org/conf/ius_2010/z_doc_misc/examplepaper.pdf, attend.ieee.org powerafrica-2018 template). Conference-specific templates may differ."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    }
+  ]
+}

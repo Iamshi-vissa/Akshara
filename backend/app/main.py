@@ -12,7 +12,7 @@ from redis.asyncio import Redis
 from app import __version__
 from app.adapters.storage import LocalBlobStorage
 from app.api.deps import AppState
-from app.api.v1 import auth, documents, inspections, jobs, system, versions
+from app.api.v1 import auth, documents, inspections, jobs, standards, system, versions
 from app.core.config import Settings, get_settings
 from app.core.errors import install_error_handlers
 from app.core.ids import uuid7
@@ -90,6 +90,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         documents.router,
         versions.router,
         inspections.router,
+        standards.router,
         jobs.router,
     ):
         app.include_router(router, prefix="/api/v1")

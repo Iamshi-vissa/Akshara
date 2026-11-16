@@ -1,0 +1,603 @@
+{
+  "slug": "apa-7",
+  "name": "APA 7 (student paper)",
+  "version": "1.0.0",
+  "family": "apa",
+  "description": "Core page, typography and reference-list rules of APA Style, 7th edition, for student papers.",
+  "notice": "Built-in profile. Values were cross-checked against secondary sources; instructors and journals may require variations.",
+  "rules": [
+    {
+      "id": "page.margin.top",
+      "title": "Top margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.top",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Top margin is {actual}; APA requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the top margin to 1 in."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Margins",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.bottom",
+      "title": "Bottom margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.bottom",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Bottom margin is {actual}; APA requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the bottom margin to 1 in."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Margins",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.left",
+      "title": "Left margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.left",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Left margin is {actual}; APA requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the left margin to 1 in."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Margins",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.margin.right",
+      "title": "Right margin",
+      "category": "page",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "margins.right",
+        "value": 1,
+        "unit": "in",
+        "tolerance": 0.05
+      },
+      "message": "Right margin is {actual}; APA requires {expected}.",
+      "fix": {
+        "strategy": "set_margins",
+        "auto": true,
+        "hint": "Set the right margin to 1 in."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Margins",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "page.paper",
+      "title": "US Letter paper",
+      "category": "page",
+      "kind": "soft",
+      "severity": "low",
+      "selector": {
+        "node": "page_setup"
+      },
+      "check": {
+        "op": "equals",
+        "property": "paper",
+        "value": "Letter"
+      },
+      "message": "Paper size is {actual}; APA papers use US Letter (8.5 × 11 in).",
+      "fix": {
+        "strategy": "set_paper",
+        "auto": true,
+        "hint": "Use US Letter paper (8.5 × 11 in)."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Paper format",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "typography.body_font",
+      "title": "Accessible body font",
+      "category": "typography",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "in_set",
+        "property": "font_family",
+        "values": [
+          "Times New Roman",
+          "Calibri",
+          "Arial",
+          "Georgia",
+          "Lucida Sans Unicode",
+          "Computer Modern",
+          "Liberation Serif",
+          "Liberation Sans",
+          "Carlito"
+        ]
+      },
+      "message": "Body text uses {actual}; APA lists Times New Roman 12, Calibri 11, Arial 11, Georgia 11, Lucida Sans Unicode 10 or Computer Modern 10.",
+      "fix": {
+        "strategy": "set_body_font",
+        "auto": true,
+        "hint": "Use Times New Roman 12 pt (or another APA-listed font)."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Font",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment. Liberation Serif/Sans and Carlito are the metric-compatible fonts LibreOffice substitutes when rendering PDFs."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "typography.body_size",
+      "title": "Body font size",
+      "category": "typography",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "in_range",
+        "property": "size_pt",
+        "min": 10,
+        "max": 12,
+        "unit": "pt"
+      },
+      "message": "Body text is {actual} pt; APA's listed fonts are 10–12 pt.",
+      "fix": {
+        "strategy": "set_body_font",
+        "auto": true,
+        "hint": "Use 12 pt for Times New Roman (11 pt Calibri/Arial/Georgia)."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Font",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "typography.double_spacing",
+      "title": "Double line spacing",
+      "category": "typography",
+      "kind": "hard",
+      "severity": "high",
+      "applies_to": [
+        "docx"
+      ],
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "equals",
+        "property": "line_spacing",
+        "value": 2.0,
+        "tolerance": 0.05
+      },
+      "message": "Line spacing is {actual}; APA papers are double-spaced throughout.",
+      "fix": {
+        "strategy": "set_line_spacing",
+        "auto": true,
+        "hint": "Set line spacing to Double (2.0)."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Line spacing",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      }
+    },
+    {
+      "id": "typography.alignment",
+      "title": "Flush-left text (no full justification)",
+      "category": "typography",
+      "kind": "hard",
+      "severity": "medium",
+      "applies_to": [
+        "docx"
+      ],
+      "selector": {
+        "node": "body_paragraph"
+      },
+      "check": {
+        "op": "equals",
+        "property": "alignment",
+        "value": "left"
+      },
+      "message": "Text is {actual}-aligned; APA text is aligned left with a ragged right edge.",
+      "fix": {
+        "strategy": "set_alignment",
+        "auto": true,
+        "hint": "Align text left; do not justify."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Paragraph alignment",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "unverified",
+        "notes": "Commonly stated APA rule; not confirmed in the secondary-source check."
+      }
+    },
+    {
+      "id": "page.page_numbers",
+      "title": "Page numbers on every page",
+      "category": "page",
+      "kind": "hard",
+      "severity": "medium",
+      "applies_to": [
+        "docx",
+        "pdf"
+      ],
+      "selector": {
+        "node": "document"
+      },
+      "check": {
+        "op": "equals",
+        "property": "has_page_numbers",
+        "value": true
+      },
+      "message": "No page numbers were found; APA requires a page number in the header of every page.",
+      "fix": {
+        "strategy": "add_page_numbers",
+        "auto": true,
+        "hint": "Insert a page number in the top-right header."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Page header",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      }
+    },
+    {
+      "id": "references.section",
+      "title": "References section",
+      "category": "references",
+      "kind": "hard",
+      "severity": "high",
+      "selector": {
+        "node": "heading",
+        "where": {
+          "role": "references"
+        }
+      },
+      "check": {
+        "op": "present"
+      },
+      "message": "No references section was found.",
+      "fix": {
+        "hint": "Add a section titled “References”."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Reference list",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.label",
+      "title": "Reference list is titled “References”",
+      "category": "references",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "heading",
+        "where": {
+          "role": "references"
+        }
+      },
+      "check": {
+        "op": "matches",
+        "property": "text",
+        "pattern": "^references$"
+      },
+      "message": "The reference list is titled “{actual}”; APA uses “References”.",
+      "fix": {
+        "strategy": "rename_heading",
+        "auto": true,
+        "hint": "Rename the heading to “References”."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Reference list",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.alphabetical",
+      "title": "References in alphabetical order",
+      "category": "references",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "reference_entry"
+      },
+      "check": {
+        "op": "reference_order",
+        "value": "alphabetical"
+      },
+      "message": "Reference entries are not in alphabetical order by first author.",
+      "fix": {
+        "strategy": "sort_references",
+        "auto": true,
+        "hint": "Sort entries alphabetically by the first author's surname."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Reference list order",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "references.citation_style",
+      "title": "Author–date citations",
+      "category": "references",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "document"
+      },
+      "check": {
+        "op": "citation_style",
+        "value": "author_year"
+      },
+      "message": "In-text citations are {actual}; APA uses author–date citations such as (Smith, 2020).",
+      "fix": {
+        "hint": "Use author–date citations, e.g. (Smith, 2020)."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "In-text citations",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "structure.abstract_length",
+      "title": "Abstract length",
+      "category": "structure",
+      "kind": "soft",
+      "severity": "low",
+      "selector": {
+        "node": "section",
+        "where": {
+          "role": "abstract"
+        }
+      },
+      "check": {
+        "op": "max_words",
+        "max": 250
+      },
+      "message": "The abstract has {actual} words; APA abstracts are usually 250 words or fewer.",
+      "fix": {
+        "hint": "Shorten the abstract to 250 words or fewer (check your instructor's limit)."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Abstract",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "unverified",
+        "notes": "Typical limit; journals and instructors set their own."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "figures.numbering",
+      "title": "Figures numbered consecutively",
+      "category": "figures_tables",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "caption",
+        "where": {
+          "target_kind": "figure"
+        }
+      },
+      "check": {
+        "op": "sequence",
+        "property": "number"
+      },
+      "message": "Figure numbering is not consecutive (found {actual}).",
+      "fix": {
+        "strategy": "renumber_captions",
+        "auto": true,
+        "hint": "Number figures 1, 2, 3… in order of appearance."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Tables and figures",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "tables.numbering",
+      "title": "Tables numbered consecutively",
+      "category": "figures_tables",
+      "kind": "hard",
+      "severity": "medium",
+      "selector": {
+        "node": "caption",
+        "where": {
+          "target_kind": "table"
+        }
+      },
+      "check": {
+        "op": "sequence",
+        "property": "number"
+      },
+      "message": "Table numbering is not consecutive (found {actual}).",
+      "fix": {
+        "strategy": "renumber_captions",
+        "auto": true,
+        "hint": "Number tables 1, 2, 3… in order of appearance."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Tables and figures",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    },
+    {
+      "id": "figures.referenced",
+      "title": "Figures and tables are referred to in the text",
+      "category": "figures_tables",
+      "kind": "soft",
+      "severity": "low",
+      "selector": {
+        "node": "caption"
+      },
+      "check": {
+        "op": "referenced_in_text"
+      },
+      "message": "A figure or table is not mentioned in the text.",
+      "fix": {
+        "hint": "Refer to every figure and table in the text."
+      },
+      "provenance": {
+        "source": "APA Publication Manual, 7th ed. (2020), Chapter 2 — Paper Elements and Format",
+        "locator": "Tables and figures",
+        "url": "https://apastyle.apa.org/style-grammar-guidelines/paper-format",
+        "verification": "secondary",
+        "notes": "Cross-checked 2026-11 against university library APA 7 guides (e.g. bowvalleycollege.libguides.com/apa7/formatting, library.untdallas.edu/APA7/GeneralFormatting); the official site was not reachable from the build environment."
+      },
+      "applies_to": [
+        "docx",
+        "pdf"
+      ]
+    }
+  ]
+}

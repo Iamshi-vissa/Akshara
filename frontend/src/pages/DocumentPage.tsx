@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api, ApiError, downloadVersion, json, type DocumentOut, type VersionOut } from '@/api/client';
+import { runJob } from '@/api/jobs';
 import { Badge, KindBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
@@ -67,7 +68,7 @@ export function DocumentPage({ extraTabs = [] }: { extraTabs?: WorkspaceTab[] })
     },
   });
   const reanalyse = useMutation({
-    mutationFn: (versionId: string) => api(`/versions/${versionId}/analyse`, { method: 'POST' }),
+    mutationFn: (versionId: string) => runJob(`/versions/${versionId}/analyse`),
     onSettled: () => void queryClient.invalidateQueries({ queryKey: ['documents', id] }),
   });
 

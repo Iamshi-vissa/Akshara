@@ -17,8 +17,8 @@ async def test_health_ready_capabilities(client: httpx.AsyncClient) -> None:
     available = {c["key"] for c in caps["capabilities"] if c["available"]}
     from app.services.capabilities import COMPLETED_PHASE
 
-    assert COMPLETED_PHASE == 3
-    assert available == {"upload", "versions", "preview", "inspect"}  # nothing unbuilt claims to work
+    assert COMPLETED_PHASE == 4
+    assert available == {"upload", "versions", "preview", "inspect", "standards"}  # nothing unbuilt claims to work
 
 
 async def test_error_envelope_and_request_id(client: httpx.AsyncClient) -> None:

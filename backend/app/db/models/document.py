@@ -53,6 +53,7 @@ class Document(UUIDPk, Timestamps, Base):
     current_version_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("document_versions.id", use_alter=True, ondelete="SET NULL")
     )
+    applied_standard_version_id: Mapped[uuid.UUID | None] = mapped_column()  # built-in or custom
     safety_warnings: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]", nullable=False)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 

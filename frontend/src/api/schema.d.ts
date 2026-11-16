@@ -439,6 +439,146 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/standards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Standards */
+        get: operations["list_standards_api_v1_standards_get"];
+        put?: never;
+        /** Create Standard */
+        post: operations["create_standard_api_v1_standards_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/standard-versions/{version_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Standard Version */
+        get: operations["get_standard_version_api_v1_standard_versions__version_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/standard-versions/{version_id}/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Rules */
+        put: operations["update_rules_api_v1_standard_versions__version_id__rules_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/standard-versions/{version_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish */
+        post: operations["publish_api_v1_standard_versions__version_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/standards/{standard_id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** New Draft */
+        post: operations["new_draft_api_v1_standards__standard_id__versions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/standards/{standard_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Standard */
+        delete: operations["delete_standard_api_v1_standards__standard_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/udse/rule-schema": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Rule Schema
+         * @description JSON Schema for a UDSE rule (used by the rule editor).
+         */
+        get: operations["rule_schema_api_v1_udse_rule_schema_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/versions/{version_id}/validations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Validate */
+        post: operations["validate_api_v1_versions__version_id__validations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/jobs": {
         parameters: {
             query?: never;
@@ -535,6 +675,8 @@ export interface components {
             status: string;
             /** Safety Warnings */
             safety_warnings: string[];
+            /** Applied Standard Version Id */
+            applied_standard_version_id?: string | null;
             current_version: components["schemas"]["VersionOut"] | null;
             /**
              * Created At
@@ -804,6 +946,104 @@ export interface components {
             /** Display Name */
             display_name?: string | null;
         };
+        /** RulesUpdate */
+        RulesUpdate: {
+            /** Rules */
+            rules: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** StandardCreate */
+        StandardCreate: {
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Extends */
+            extends?: string | null;
+            /** Rules */
+            rules?: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** StandardDetail */
+        StandardDetail: {
+            /**
+             * Version Id
+             * Format: uuid
+             */
+            version_id: string;
+            /** Standard Id */
+            standard_id: string | null;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Family */
+            family: string;
+            /** Description */
+            description: string;
+            /** Builtin */
+            builtin: boolean;
+            /** Status */
+            status: string;
+            /** Version */
+            version: string;
+            /** Extends */
+            extends: string | null;
+            /** Notice */
+            notice: string | null;
+            /** Rules */
+            rules: {
+                [key: string]: unknown;
+            }[];
+            /** Own Rules */
+            own_rules?: {
+                [key: string]: unknown;
+            }[] | null;
+        };
+        /** StandardOut */
+        StandardOut: {
+            /** Id */
+            id: string | null;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Family */
+            family: string;
+            /** Description */
+            description: string;
+            /** Builtin */
+            builtin: boolean;
+            /** Extends */
+            extends?: string | null;
+            /** Notice */
+            notice?: string | null;
+            /** Versions */
+            versions: components["schemas"]["StandardVersionOut"][];
+        };
+        /** StandardVersionOut */
+        StandardVersionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Version */
+            version: string;
+            /** Status */
+            status: string;
+            /** Rule Count */
+            rule_count: number;
+            /** Created At */
+            created_at?: string | null;
+            /** Published At */
+            published_at?: string | null;
+        };
         /** TokenResponse */
         TokenResponse: {
             /** Access Token */
@@ -839,6 +1079,8 @@ export interface components {
             status: string;
             /** Safety Warnings */
             safety_warnings: string[];
+            /** Applied Standard Version Id */
+            applied_standard_version_id?: string | null;
             current_version: components["schemas"]["VersionOut"] | null;
             /**
              * Created At
@@ -895,6 +1137,14 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** ValidationRequest */
+        ValidationRequest: {
+            /**
+             * Standard Version Id
+             * Format: uuid
+             */
+            standard_version_id: string;
         };
         /** VersionOut */
         VersionOut: {
@@ -1800,6 +2050,273 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QualityRow"][];
+                };
+            };
+        };
+    };
+    list_standards_api_v1_standards_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardOut"][];
+                };
+            };
+        };
+    };
+    create_standard_api_v1_standards_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StandardCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_standard_version_api_v1_standard_versions__version_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_rules_api_v1_standard_versions__version_id__rules_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RulesUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_api_v1_standard_versions__version_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    new_draft_api_v1_standards__standard_id__versions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                standard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StandardDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_standard_api_v1_standards__standard_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                standard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rule_schema_api_v1_udse_rule_schema_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    validate_api_v1_versions__version_id__validations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ValidationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

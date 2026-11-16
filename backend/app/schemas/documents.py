@@ -33,6 +33,7 @@ class DocumentOut(ApiModel):
     origin: str
     status: str
     safety_warnings: list[str]
+    applied_standard_version_id: uuid.UUID | None = None
     current_version: VersionOut | None
     created_at: datetime
     updated_at: datetime

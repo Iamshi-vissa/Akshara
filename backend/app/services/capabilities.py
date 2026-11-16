@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from app.schemas.system import Capability
 
-COMPLETED_PHASE = 3
+COMPLETED_PHASE = 4
 
 _ALL: list[tuple[str, str, int, str]] = [
     ("upload", "Secure upload & library", 1, "DOCX, PDF and PPTX with content-based validation."),
