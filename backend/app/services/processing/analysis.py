@@ -112,7 +112,9 @@ async def analyse(ctx: JobContext, params: dict[str, Any]) -> dict[str, Any]:
             if render.truncated:
                 warnings.append(f"Only the first {len(render.pages)} pages were rendered.")
         info["warnings"] = [*info.get("warnings", []), *warnings]
-        version.summary = info
+        # Keep provenance written at creation time (generation / presentation); the rest is recomputed.
+        kept = {k: v for k, v in (version.summary or {}).items() if k in ("generated_sections", "presentation")}
+        version.summary = {**kept, **info}
         if adm is None and render is None:
             version.analysis_status, version.analysis_error = "failed", "; ".join(warnings)
         else:

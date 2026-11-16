@@ -10,6 +10,7 @@ const NAV: { to: string; label: string; icon: IconName; capability?: string }[] 
   { to: '/', label: 'Dashboard', icon: 'dashboard' },
   { to: '/documents', label: 'Library', icon: 'library' },
   { to: '/create', label: 'Create', icon: 'create', capability: 'create' },
+  { to: '/presentations', label: 'Slides', icon: 'slides', capability: 'presentations' },
   { to: '/quality', label: 'Quality', icon: 'quality', capability: 'inspect' },
   { to: '/standards', label: 'Standards', icon: 'standard', capability: 'standards' },
 ];

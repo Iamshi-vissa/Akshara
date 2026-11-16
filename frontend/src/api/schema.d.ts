@@ -837,6 +837,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/presentations/themes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Themes */
+        get: operations["list_themes_api_v1_presentations_themes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/presentations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Presentation */
+        post: operations["create_presentation_api_v1_presentations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/jobs": {
         parameters: {
             query?: never;
@@ -1325,6 +1359,46 @@ export interface components {
             /** Next Cursor */
             next_cursor?: string | null;
         };
+        /** PresentationCreate */
+        PresentationCreate: {
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "document" | "outline" | "brief";
+            /**
+             * Theme
+             * @default paper
+             */
+            theme: string;
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /** Version Id */
+            version_id?: string | null;
+            /**
+             * Outline
+             * @default
+             */
+            outline: string;
+            /**
+             * Brief
+             * @default
+             */
+            brief: string;
+            /**
+             * Audience
+             * @default
+             */
+            audience: string;
+            /**
+             * Slide Count
+             * @default 10
+             */
+            slide_count: number;
+        };
         /** ProposalOut */
         ProposalOut: {
             /**
@@ -1528,6 +1602,19 @@ export interface components {
             node_id: string;
             /** After */
             after: string;
+        };
+        /** ThemeOut */
+        ThemeOut: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Background */
+            background: string;
+            /** Title */
+            title: string;
+            /** Accent */
+            accent: string;
         };
         /** TokenResponse */
         TokenResponse: {
@@ -3355,6 +3442,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_themes_api_v1_presentations_themes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThemeOut"][];
+                };
+            };
+        };
+    };
+    create_presentation_api_v1_presentations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresentationCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
                 };
             };
             /** @description Validation Error */

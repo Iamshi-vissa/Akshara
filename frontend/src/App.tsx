@@ -19,6 +19,7 @@ const StandardsPage = lazy(() => import('@/pages/StandardsPage').then((m) => ({ 
 const StandardDetailPage = lazy(() => import('@/pages/StandardDetailPage').then((m) => ({ default: m.StandardDetailPage })));
 const CreatePage = lazy(() => import('@/pages/CreatePage').then((m) => ({ default: m.CreatePage })));
 const DraftPage = lazy(() => import('@/pages/DraftPage').then((m) => ({ default: m.DraftPage })));
+const PresentationsPage = lazy(() => import('@/pages/PresentationsPage').then((m) => ({ default: m.PresentationsPage })));
 const ComingSoonPage = lazy(() => import('@/pages/ComingSoonPage').then((m) => ({ default: m.ComingSoonPage })));
 const NotFoundPage = lazy(() => import('@/pages/ComingSoonPage').then((m) => ({ default: m.NotFoundPage })));
 
@@ -68,7 +69,7 @@ export function App() {
           <Route path="edit" element={page(<ComingSoonPage capability="edit" />)} />
           <Route path="create" element={page(<CreatePage />)} />
           <Route path="create/:draftId" element={page(<DraftPage />)} />
-          <Route path="presentations" element={page(<ComingSoonPage capability="presentations" />)} />
+          <Route path="presentations" element={page(<PresentationsPage />)} />
           <Route path="*" element={page(<NotFoundPage />)} />
         </Route>
       </Route>

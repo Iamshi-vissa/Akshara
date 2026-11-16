@@ -27,6 +27,7 @@ export type ChangeSetOut = components['schemas']['ChangeSetOut'];
 export type ProposalOut = components['schemas']['ProposalOut'];
 export type DraftOut = components['schemas']['DraftOut'];
 export type KindOut = components['schemas']['KindOut'];
+export type ThemeOut = components['schemas']['ThemeOut'];
 
 export const API_BASE = '/api/v1';
 
