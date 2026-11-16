@@ -44,9 +44,7 @@ def upgrade() -> None:
         sa.Column("action", sa.String(length=64), nullable=False),
         sa.Column("subject_type", sa.String(length=32), nullable=True),
         sa.Column("subject_id", sa.Uuid(), nullable=True),
-        sa.Column(
-            "metadata", postgresql.JSONB(astext_type=sa.Text()), server_default="{}", nullable=False
-        ),
+        sa.Column("metadata", postgresql.JSONB(astext_type=sa.Text()), server_default="{}", nullable=False),
         sa.Column("ip", postgresql.INET(), nullable=True),
         sa.Column(
             "created_at",
@@ -56,9 +54,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_audit_events")),
     )
-    op.create_index(
-        "ix_audit_owner_created", "audit_events", ["owner_id", "created_at"], unique=False
-    )
+    op.create_index("ix_audit_owner_created", "audit_events", ["owner_id", "created_at"], unique=False)
     op.create_table(
         "blobs",
         sa.Column("sha256", sa.String(length=64), nullable=False),
@@ -139,9 +135,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_documents")),
     )
-    op.create_index(
-        "ix_documents_owner_updated", "documents", ["owner_id", "updated_at"], unique=False
-    )
+    op.create_index("ix_documents_owner_updated", "documents", ["owner_id", "updated_at"], unique=False)
     op.create_table(
         "jobs",
         sa.Column("owner_id", sa.Uuid(), nullable=False),
@@ -150,9 +144,7 @@ def upgrade() -> None:
         sa.Column("progress", sa.Float(), server_default="0", nullable=False),
         sa.Column("subject_type", sa.String(length=32), nullable=True),
         sa.Column("subject_id", sa.Uuid(), nullable=True),
-        sa.Column(
-            "params", postgresql.JSONB(astext_type=sa.Text()), server_default="{}", nullable=False
-        ),
+        sa.Column("params", postgresql.JSONB(astext_type=sa.Text()), server_default="{}", nullable=False),
         sa.Column("result", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.Column("error_code", sa.String(length=64), nullable=True),
         sa.Column("error_message", sa.Text(), nullable=True),
@@ -170,9 +162,7 @@ def upgrade() -> None:
             "status IN ('queued','running','succeeded','failed','cancelled')",
             name=op.f("ck_jobs_status"),
         ),
-        sa.ForeignKeyConstraint(
-            ["owner_id"], ["users.id"], name=op.f("fk_jobs_owner_id_users"), ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["owner_id"], ["users.id"], name=op.f("fk_jobs_owner_id_users"), ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_jobs")),
     )
     op.create_index("ix_jobs_owner_created", "jobs", ["owner_id", "created_at"], unique=False)
@@ -202,9 +192,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_refresh_tokens")),
         sa.UniqueConstraint("token_hash", name=op.f("uq_refresh_tokens_token_hash")),
     )
-    op.create_index(
-        op.f("ix_refresh_tokens_family_id"), "refresh_tokens", ["family_id"], unique=False
-    )
+    op.create_index(op.f("ix_refresh_tokens_family_id"), "refresh_tokens", ["family_id"], unique=False)
     op.create_index(op.f("ix_refresh_tokens_user_id"), "refresh_tokens", ["user_id"], unique=False)
     op.create_table(
         "document_versions",
@@ -215,9 +203,7 @@ def upgrade() -> None:
         sa.Column("adm_blob", sa.String(length=64), nullable=True),
         sa.Column("adm_schema_version", sa.String(length=16), nullable=True),
         sa.Column("created_by", sa.String(length=16), nullable=False),
-        sa.Column(
-            "summary", postgresql.JSONB(astext_type=sa.Text()), server_default="{}", nullable=False
-        ),
+        sa.Column("summary", postgresql.JSONB(astext_type=sa.Text()), server_default="{}", nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -256,9 +242,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_document_versions")),
         sa.UniqueConstraint("document_id", "number", name="uq_document_versions_doc_number"),
     )
-    op.create_index(
-        op.f("ix_document_versions_document_id"), "document_versions", ["document_id"], unique=False
-    )
+    op.create_index(op.f("ix_document_versions_document_id"), "document_versions", ["document_id"], unique=False)
     op.create_foreign_key(
         op.f("fk_documents_current_version_id_document_versions"),
         "documents",
@@ -275,9 +259,7 @@ def downgrade() -> None:
     op.execute("DROP TRIGGER IF EXISTS document_versions_source_immutable ON document_versions")
     op.execute("DROP TRIGGER IF EXISTS blobs_immutable ON blobs")
     op.execute("DROP FUNCTION IF EXISTS akshara_reject_change()")
-    op.drop_constraint(
-        op.f("fk_documents_current_version_id_document_versions"), "documents", type_="foreignkey"
-    )
+    op.drop_constraint(op.f("fk_documents_current_version_id_document_versions"), "documents", type_="foreignkey")
     op.drop_index(op.f("ix_document_versions_document_id"), table_name="document_versions")
     op.drop_table("document_versions")
     op.drop_index(op.f("ix_refresh_tokens_user_id"), table_name="refresh_tokens")
