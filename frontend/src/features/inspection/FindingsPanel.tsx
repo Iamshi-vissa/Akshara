@@ -12,7 +12,7 @@ import { formatDate } from '@/lib/format';
 
 import { FindingCard } from './FindingCard';
 
-export type RunKind = 'inspection' | 'udse' | 'visual';
+export type RunKind = 'inspection' | 'udse' | 'visual' | 'references';
 
 export function useLatestRun(versionId: string, kind: RunKind, enabled = true) {
   return useQuery({

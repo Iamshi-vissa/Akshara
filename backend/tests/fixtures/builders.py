@@ -290,6 +290,47 @@ def build_visual_defects(path: Path) -> Path:
     return path
 
 
+REFERENCE_CASES = {
+    # label: expected status from the recorded Crossref/OpenAlex responses
+    "[1]": "verified",  # correct DOI and details
+    "[2]": "not_found",  # DOI that is not registered anywhere
+    "[3]": "mismatch",  # real DOI, but the title of a different paper
+    "[4]": "possible_match",  # real paper, no DOI — found by title search
+    "[5]": "unverified",  # invented work: no DOI, no link, no registry match
+    "[6]": "not_found",  # a doi.org link to an unregistered DOI
+}
+REFERENCE_ENTRIES = [
+    '[1] T. Akiba, S. Sano, T. Yanase, T. Ohta, and M. Koyama, "Optuna: A next-generation hyperparameter '
+    'optimization framework," in Proc. 25th ACM SIGKDD Int. Conf. Knowledge Discovery & Data Mining, 2019, '
+    "pp. 2623-2631, doi: 10.1145/3292500.3330701.",
+    '[2] A. Author, "A study of documents," Journal of Testing, vol. 1, no. 2, pp. 1-10, 2020, '
+    "doi: 10.9999/akshara-does-not-exist-123.",
+    '[3] Y. LeCun, Y. Bengio, and G. Hinton, "Attention is all you need," Nature, vol. 521, pp. 436-444, 2015, '
+    "doi: 10.1038/nature14539.",
+    '[4] C. R. Harris et al., "Array programming with NumPy," Nature, vol. 585, pp. 357-362, 2020.',
+    '[5] Q. Zyxwv, "Quantum hydrodynamics of invisible documents," Journal of Imaginary Results, vol. 9, 2021.',
+    '[6] B. Writer, "Notes on structured writing," Example Notes, 2018. [Online]. Available: '
+    "https://doi.org/10.9999/akshara-missing-page",
+]
+
+
+def build_reference_report(path: Path) -> Path:
+    doc = Document()
+    _base_style(doc, spacing=1.15)
+    _margins(doc.sections[0], 1.0)
+    _page_number_footer(doc.sections[0])
+    doc.core_properties.title = "Reference Checks"
+    doc.core_properties.author = "A. Researcher"
+    doc.add_heading("Reference Checks", level=0)
+    doc.add_heading("1. Introduction", level=1)
+    doc.add_paragraph(BODY + " Prior work [1], [2], [3], [4], [5], [6] is cited here.")
+    doc.add_heading("References", level=1)
+    for e in REFERENCE_ENTRIES:
+        doc.add_paragraph(e)
+    doc.save(str(path))
+    return path
+
+
 def to_pdf(src: Path, out_dir: Path) -> Path:
     """Convert with LibreOffice (headless) — the same renderer the app uses."""
     profile = Path(tempfile.mkdtemp(prefix="lo-profile-"))
@@ -323,6 +364,7 @@ def build_all(out: Path) -> dict[str, Path]:
         "clean_pptx": build_clean_deck(out / "clean_deck.pptx"),
         "overflow_pptx": build_overflow_deck(out / "overflow_deck.pptx"),
         "visual_docx": build_visual_defects(out / "visual_defects.docx"),
+        "references_docx": build_reference_report(out / "reference_checks.docx"),
     }
     files["clean_pdf"] = to_pdf(files["clean_docx"], out)
     files["defective_pdf"] = to_pdf(files["defective_docx"], out)

@@ -20,6 +20,7 @@ from app.api.v1 import (
     inspections,
     jobs,
     presentations,
+    references,
     standards,
     system,
     versions,
@@ -105,6 +106,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         changes.router,
         generation.router,
         presentations.router,
+        references.router,
         jobs.router,
     ):
         app.include_router(router, prefix="/api/v1")

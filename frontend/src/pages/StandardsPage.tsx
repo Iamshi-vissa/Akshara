@@ -63,7 +63,12 @@ export function StandardsPage() {
           <BlurText text="Standards, as machine-checkable rules." className="mt-2 font-serif text-4xl font-semibold" animateBy="words" delay={60} trigger="load" />
           <p className="mt-2 max-w-2xl text-paper-dim">Hard rules are checked deterministically. Every built-in rule cites its source and how it was verified.</p>
         </div>
-        <Button onClick={() => setOpen(true)}><Icon name="create" /> New custom standard</Button>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/standards/build" className="inline-flex h-10 items-center gap-2 rounded-lg border border-ink-600 px-4 text-sm font-medium hover:border-ink-500">
+            <Icon name="upload" /> Build from guidelines
+          </Link>
+          <Button onClick={() => setOpen(true)}><Icon name="create" /> New custom standard</Button>
+        </div>
       </header>
       <section>
         <h2 className="mb-4 font-serif text-2xl font-semibold">Built-in profiles</h2>

@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     # `ant auth login` profile). Users must also opt in (allow_external_llm) before text is sent.
     llm_provider: Literal["none", "anthropic"] = "none"
     llm_model: str = "claude-opus-5-5"
+    # Reference checks look DOIs and titles up in Crossref/OpenAlex and test cited links.
+    # Only public bibliographic text is sent. Turn off for air-gapped deployments.
+    reference_lookups: bool = True
 
     # --- Storage -----------------------------------------------------------------------
     storage_backend: Literal["local"] = "local"

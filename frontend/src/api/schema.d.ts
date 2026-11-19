@@ -579,6 +579,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/standards/extract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Extract Rules
+         * @description Candidate rules, each grounded in a verbatim quote. Nothing is saved: a person reviews them
+         *     and creates a draft standard from the ones they accept (POST /standards).
+         */
+        post: operations["extract_rules_api_v1_standards_extract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/documents/{document_id}/changesets": {
         parameters: {
             query?: never;
@@ -871,6 +892,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/versions/{version_id}/references/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verify References */
+        post: operations["verify_references_api_v1_versions__version_id__references_verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/jobs": {
         parameters: {
             query?: never;
@@ -909,6 +947,16 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_extract_rules_api_v1_standards_extract_post */
+        Body_extract_rules_api_v1_standards_extract_post: {
+            /**
+             * File
+             * @description A guideline as .docx, .pdf or .txt
+             */
+            file?: string | null;
+            /** Text */
+            text?: string | null;
+        };
         /** Body_upload_document_api_v1_documents_post */
         Body_upload_document_api_v1_documents_post: {
             /**
@@ -918,6 +966,19 @@ export interface components {
             file: string;
             /** Title */
             title?: string | null;
+        };
+        /** CandidateOut */
+        CandidateOut: {
+            /** Rule */
+            rule: {
+                [key: string]: unknown;
+            };
+            /** Quote */
+            quote: string;
+            /** Evidence Verified */
+            evidence_verified: boolean;
+            /** Problems */
+            problems: string[];
         };
         /** CapabilitiesOut */
         CapabilitiesOut: {
@@ -1163,6 +1224,15 @@ export interface components {
              * @enum {string}
              */
             format: "docx" | "pdf" | "pptx";
+        };
+        /** ExtractionOut */
+        ExtractionOut: {
+            /** Source Name */
+            source_name: string;
+            /** Characters */
+            characters: number;
+            /** Candidates */
+            candidates: components["schemas"]["CandidateOut"][];
         };
         /** FindingOut */
         FindingOut: {
@@ -1717,6 +1787,11 @@ export interface components {
              * Format: uuid
              */
             standard_version_id: string;
+        };
+        /** VerifyRequest */
+        VerifyRequest: {
+            /** Style */
+            style?: ("apa" | "ieee" | "mla") | null;
         };
         /** VersionOut */
         VersionOut: {
@@ -2442,7 +2517,7 @@ export interface operations {
     latest_inspection_api_v1_versions__version_id__inspections_latest_get: {
         parameters: {
             query?: {
-                kind?: "inspection" | "udse" | "visual";
+                kind?: "inspection" | "udse" | "visual" | "references";
             };
             header?: never;
             path: {
@@ -2880,6 +2955,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    extract_rules_api_v1_standards_extract_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_extract_rules_api_v1_standards_extract_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionOut"];
                 };
             };
             /** @description Validation Error */
@@ -3485,6 +3593,41 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["PresentationCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_references_api_v1_versions__version_id__references_verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["VerifyRequest"] | null;
             };
         };
         responses: {

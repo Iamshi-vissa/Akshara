@@ -20,7 +20,7 @@ async def test_health_ready_capabilities(client: httpx.AsyncClient) -> None:
     assert "Not configured" in conditional["ai_edit"]["note"]
     from app.services.capabilities import COMPLETED_PHASE
 
-    assert COMPLETED_PHASE == 8
+    assert COMPLETED_PHASE == 9
     assert available == {
         "upload",
         "versions",
@@ -31,6 +31,7 @@ async def test_health_ready_capabilities(client: httpx.AsyncClient) -> None:
         "create",
         "presentations",
         "visual",
+        "research",
     }  # nothing unbuilt claims to work
 
 

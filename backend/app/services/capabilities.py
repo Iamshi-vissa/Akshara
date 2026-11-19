@@ -11,7 +11,7 @@ from __future__ import annotations
 from app.core.config import Settings
 from app.schemas.system import Capability
 
-COMPLETED_PHASE = 8
+COMPLETED_PHASE = 9
 
 _ALL: list[tuple[str, str, int, str]] = [
     ("upload", "Secure upload & library", 1, "DOCX, PDF and PPTX with content-based validation."),
@@ -36,8 +36,20 @@ def capabilities_for(settings: Settings) -> list[Capability]:
     """Phase-based capabilities plus features that also depend on server configuration."""
     grammar = bool(settings.languagetool_url)
     llm = settings.llm_provider != "none"
+    phase_caps = [
+        Capability(
+            key=c.key,
+            label=c.label,
+            available=c.available and settings.reference_lookups,
+            phase=c.phase,
+            note=c.note if settings.reference_lookups else "Reference lookups are turned off on this server.",
+        )
+        if c.key == "research"
+        else c
+        for c in CAPABILITIES
+    ]
     return [
-        *CAPABILITIES,
+        *phase_caps,
         Capability(
             key="grammar",
             label="Grammar & spelling",

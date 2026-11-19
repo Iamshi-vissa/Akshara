@@ -20,6 +20,7 @@ const StandardDetailPage = lazy(() => import('@/pages/StandardDetailPage').then(
 const CreatePage = lazy(() => import('@/pages/CreatePage').then((m) => ({ default: m.CreatePage })));
 const DraftPage = lazy(() => import('@/pages/DraftPage').then((m) => ({ default: m.DraftPage })));
 const PresentationsPage = lazy(() => import('@/pages/PresentationsPage').then((m) => ({ default: m.PresentationsPage })));
+const StandardBuilderPage = lazy(() => import('@/pages/StandardBuilderPage').then((m) => ({ default: m.StandardBuilderPage })));
 const ComingSoonPage = lazy(() => import('@/pages/ComingSoonPage').then((m) => ({ default: m.ComingSoonPage })));
 const NotFoundPage = lazy(() => import('@/pages/ComingSoonPage').then((m) => ({ default: m.NotFoundPage })));
 
@@ -64,6 +65,7 @@ export function App() {
           <Route path="documents/:id" element={page(<DocumentPage extraTabs={workspaceTabs} />)} />
           <Route path="settings" element={page(<SettingsPage />)} />
           <Route path="standards" element={page(<StandardsPage />)} />
+          <Route path="standards/build" element={page(<StandardBuilderPage />)} />
           <Route path="standards/:versionId" element={page(<StandardDetailPage />)} />
           <Route path="quality" element={page(<QualityPage />)} />
           <Route path="edit" element={page(<ComingSoonPage capability="edit" />)} />

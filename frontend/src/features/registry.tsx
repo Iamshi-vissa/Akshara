@@ -3,6 +3,7 @@ import { FindingsPanel } from '@/features/inspection/FindingsPanel';
 import { ChangesPanel } from '@/features/changes/ChangesPanel';
 import { EditPanel } from '@/features/changes/EditPanel';
 import { CompliancePanel } from '@/features/standards/CompliancePanel';
+import { ReferencesPanel } from '@/features/references/ReferencesPanel';
 import { VisualPanel } from '@/features/visual/VisualPanel';
 import type { WorkspaceTab } from '@/pages/DocumentPage';
 
@@ -24,6 +25,11 @@ export const workspaceTabs: WorkspaceTab[] = [
     key: 'visual',
     label: 'Visual',
     render: (doc, version) => <VisualPanel version={version} unit={doc.kind === 'pptx' ? 'Slide' : 'Page'} />,
+  },
+  {
+    key: 'references',
+    label: 'References',
+    render: (doc, version) => <ReferencesPanel doc={doc} version={version} />,
   },
   {
     key: 'compliance',

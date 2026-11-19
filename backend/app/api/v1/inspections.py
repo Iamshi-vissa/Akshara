@@ -57,7 +57,7 @@ async def latest_inspection(
     user: CurrentUser,
     session: SessionDep,
     storage: StorageDep,
-    kind: Literal["inspection", "udse", "visual"] = "inspection",
+    kind: Literal["inspection", "udse", "visual", "references"] = "inspection",
 ) -> InspectionWithFindings | None:
     await VersionService(session, storage).owned(user.id, version_id)
     svc = InspectionService(session)

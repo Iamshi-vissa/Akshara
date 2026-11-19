@@ -59,3 +59,16 @@ class RulesUpdate(ApiModel):
 
 class ValidationRequest(ApiModel):
     standard_version_id: uuid.UUID
+
+
+class CandidateOut(ApiModel):
+    rule: dict[str, Any]
+    quote: str
+    evidence_verified: bool
+    problems: list[str]
+
+
+class ExtractionOut(ApiModel):
+    source_name: str
+    characters: int
+    candidates: list[CandidateOut]
