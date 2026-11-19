@@ -39,6 +39,7 @@ class RenderedPage:
     spans: list[dict[str, Any]] = field(default_factory=list)
     images: list[tuple[float, float, float, float]] = field(default_factory=list)
     drawings_bbox: tuple[float, float, float, float] | None = None
+    drawings: list[tuple[float, float, float, float]] = field(default_factory=list)
 
 
 @dataclass
@@ -113,6 +114,35 @@ def _is_blank(pix: pymupdf.Pixmap) -> bool:
     return total > 0 and dark / total < 0.0008
 
 
+def _background(pix: pymupdf.Pixmap, bbox: list[float], scale: float) -> int | None:
+    """Most common (quantised) colour inside a text box — the background the text sits on.
+
+    Glyph pixels are a minority of a span's box, so the mode is the background. Sampled on a
+    coarse grid to keep rendering fast.
+    """
+    x0, y0, x1, y1 = (int(v * scale) for v in bbox)
+    x0, y0 = max(0, x0), max(0, y0)
+    x1, y1 = min(pix.width - 1, x1), min(pix.height - 1, y1)
+    if x1 <= x0 or y1 <= y0:
+        return None
+    n, stride, samples = pix.n, pix.stride, pix.samples
+    counts: dict[int, int] = {}
+    step_x = max(1, (x1 - x0) // 24)
+    step_y = max(1, (y1 - y0) // 6)
+    for y in range(y0, y1 + 1, step_y):
+        row = y * stride
+        for x in range(x0, x1 + 1, step_x):
+            o = row + x * n
+            r, g, b = samples[o], samples[o + 1], samples[o + 2]
+            key = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4)
+            counts[key] = counts.get(key, 0) + 1
+    if not counts:
+        return None
+    q = max(counts, key=lambda k: counts[k])
+    # back to 0xRRGGBB using the centre of each 16-level bucket
+    return (((q >> 8) * 17) << 16) | ((((q >> 4) & 15) * 17) << 8) | ((q & 15) * 17)
+
+
 def rasterize(
     pdf_bytes: bytes, dpi: int = PREVIEW_DPI, max_pages: int = MAX_RENDER_PAGES
 ) -> tuple[list[RenderedPage], int]:
@@ -122,6 +152,7 @@ def rasterize(
         for pno in range(min(doc.page_count, max_pages)):
             page = doc[pno]
             pix = page.get_pixmap(dpi=dpi, alpha=False)
+            scale = dpi / 72.0
             spans = []
             for b in page.get_text("dict", flags=pymupdf.TEXTFLAGS_TEXT)["blocks"]:
                 for line in b.get("lines", []):
@@ -133,15 +164,22 @@ def rasterize(
                                     "bbox": [round(v, 2) for v in s["bbox"]],
                                     "size": round(s["size"], 1),
                                     "font": s["font"],
+                                    "color": s.get("color", 0),
+                                    "bg": _background(pix, s["bbox"], scale),
                                 }
                             )
             images = [tuple(round(v, 2) for v in i["bbox"]) for i in page.get_image_info()]
             rect = None
             draws = page.get_drawings()
+            drawn: list[tuple[float, float, float, float]] = []
             if draws:
                 r = pymupdf.Rect()
                 for d in draws:
                     r |= d["rect"]
+                    dr = d["rect"]
+                    # keep visible shapes (table rules, boxes); skip specks and full-page backgrounds
+                    if (dr.width > 4 or dr.height > 4) and len(drawn) < 400:
+                        drawn.append((round(dr.x0, 2), round(dr.y0, 2), round(dr.x1, 2), round(dr.y1, 2)))
                 rect = (round(r.x0, 2), round(r.y0, 2), round(r.x1, 2), round(r.y1, 2))
             pages.append(
                 RenderedPage(
@@ -153,6 +191,7 @@ def rasterize(
                     spans=spans,
                     images=images,
                     drawings_bbox=rect,
+                    drawings=drawn,
                 )
             )
         return pages, doc.page_count

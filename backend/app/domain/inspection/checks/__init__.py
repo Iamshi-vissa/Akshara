@@ -7,4 +7,5 @@ from app.domain.inspection.checks import (  # noqa: F401
     references,
     slides,
     structure,
+    visual,
 )

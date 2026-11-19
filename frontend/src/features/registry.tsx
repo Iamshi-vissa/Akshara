@@ -3,6 +3,7 @@ import { FindingsPanel } from '@/features/inspection/FindingsPanel';
 import { ChangesPanel } from '@/features/changes/ChangesPanel';
 import { EditPanel } from '@/features/changes/EditPanel';
 import { CompliancePanel } from '@/features/standards/CompliancePanel';
+import { VisualPanel } from '@/features/visual/VisualPanel';
 import type { WorkspaceTab } from '@/pages/DocumentPage';
 
 /** Workspace tabs contributed by each module, in display order. */
@@ -18,6 +19,11 @@ export const workspaceTabs: WorkspaceTab[] = [
         empty={<p className="text-sm text-paper-dim">This version has not been inspected yet.</p>}
       />
     ),
+  },
+  {
+    key: 'visual',
+    label: 'Visual',
+    render: (doc, version) => <VisualPanel version={version} unit={doc.kind === 'pptx' ? 'Slide' : 'Page'} />,
   },
   {
     key: 'compliance',

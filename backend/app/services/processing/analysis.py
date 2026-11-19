@@ -90,6 +90,7 @@ async def analyse(ctx: JobContext, params: dict[str, Any]) -> dict[str, Any]:
                         "spans": p.spans,
                         "images": p.images,
                         "drawings_bbox": p.drawings_bbox,
+                        "drawings": p.drawings,
                     }
                     for p in render.pages
                 ],

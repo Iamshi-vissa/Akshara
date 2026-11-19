@@ -17,6 +17,7 @@ Category = Literal[
     "metadata",
     "slides",
     "content",
+    "visual",
 ]
 
 

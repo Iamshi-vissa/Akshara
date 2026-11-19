@@ -76,3 +76,22 @@ async def test_quality_overview_and_isolation(client: httpx.AsyncClient, fixture
         f"/api/v1/inspections/{run_id}/report",
     ):
         assert (await client.get(path, headers=bob)).status_code == 404
+
+
+async def test_visual_defects_are_found_on_the_rendered_pages(client: httpx.AsyncClient, fixture_docs) -> None:
+    from tests.fixtures.builders import VISUAL_DEFECTS
+
+    headers = await register_and_login(client)
+    vid = (await upload(client, headers, fixture_docs["visual_docx"]))["current_version"]["id"]
+    latest = (await client.get(f"/api/v1/versions/{vid}/inspections/latest", headers=headers)).json()
+    visual = [f for f in latest["findings"] if f["category"] == "visual"]
+    assert {f["code"] for f in visual} == VISUAL_DEFECTS
+    assert all(f["detector"] == "visual" and f["page_index"] is not None for f in visual)
+    margin = next(f for f in visual if f["code"] == "VIS.MARGIN_INTRUSION")
+    assert margin["actual"]["boxes"] and len(margin["bbox"]) == 4
+    assert latest["stats"]["scores"]["dimensions"]["visual"] < 100
+
+    clean = (await upload(client, headers, fixture_docs["clean_docx"]))["current_version"]["id"]
+    latest = (await client.get(f"/api/v1/versions/{clean}/inspections/latest", headers=headers)).json()
+    assert not [f for f in latest["findings"] if f["category"] == "visual"]
+    assert latest["stats"]["scores"]["dimensions"]["visual"] == 100

@@ -18,7 +18,7 @@ from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Inches, Pt
+from docx.shared import Inches, Pt, RGBColor
 from pptx import Presentation
 from pptx.util import Inches as PInches
 from pptx.util import Pt as PPt
@@ -232,6 +232,64 @@ def build_overflow_deck(path: Path) -> Path:
     return path
 
 
+VISUAL_DEFECTS = {
+    "VIS.MARGIN_INTRUSION",  # 8-inch image and a 9-inch table inside 1-inch margins
+    "VIS.CONTENT_OFF_PAGE",  # the 8-inch image also runs past the 8.5-inch page
+    "VIS.LOW_CONTRAST",  # light-grey body text on white
+    "VIS.BLANK_PAGE",  # two consecutive page breaks
+    "VIS.ALIGNMENT",  # paragraphs indented by 3 pt
+}
+
+
+def build_visual_defects(path: Path) -> Path:
+    """A clean-looking report whose problems only show on the rendered page (VISUAL_DEFECTS)."""
+    doc = Document()
+    _base_style(doc, spacing=1.15)
+    sec = doc.sections[0]
+    _margins(sec, 1.0)
+    _page_number_footer(sec)
+    doc.core_properties.title = "Visual Defects"
+    doc.core_properties.author = "A. Researcher"
+    doc.add_heading("Visual Defects", level=0)
+    doc.add_heading("1. Introduction", level=1)
+    for i in range(14):
+        para = doc.add_paragraph(BODY)
+        if i in (3, 7, 11):
+            para.paragraph_format.left_indent = Pt(3)  # off the text edge
+    grey = doc.add_paragraph(BODY)
+    for r in grey.runs:
+        r.font.color.rgb = RGBColor(0xC8, 0xC8, 0xC8)
+    with tempfile.TemporaryDirectory() as t:
+        img = Path(t) / "wide.png"
+        img.write_bytes(png_bytes(800, 120))
+        doc.add_picture(str(img), width=Inches(8))  # text width is 6.5 in
+    doc.add_paragraph("Figure 1. A figure wider than the text area.", style="Caption")
+    doc.add_paragraph("Table 1. A table wider than the text area.", style="Caption")
+    table = doc.add_table(rows=2, cols=3)
+    table.style = "Table Grid"
+    table.autofit = False
+    for row in table.rows:
+        for c, cell in enumerate(row.cells):
+            cell.width = Inches(3)
+            cell.text = f"cell {c}"
+    tbl_w = table._tbl.tblPr.find(qn("w:tblW"))
+    if tbl_w is None:
+        tbl_w = OxmlElement("w:tblW")
+        table._tbl.tblPr.append(tbl_w)
+    tbl_w.set(qn("w:w"), str(9 * 1440))
+    tbl_w.set(qn("w:type"), "dxa")
+    grid = table._tbl.tblGrid
+    for col in grid.findall(qn("w:gridCol")):
+        col.set(qn("w:w"), str(3 * 1440))
+    doc.add_paragraph(BODY)
+    doc.add_page_break()
+    doc.add_page_break()  # leaves an empty page
+    doc.add_heading("2. Conclusion", level=1)
+    doc.add_paragraph(BODY)
+    doc.save(str(path))
+    return path
+
+
 def to_pdf(src: Path, out_dir: Path) -> Path:
     """Convert with LibreOffice (headless) — the same renderer the app uses."""
     profile = Path(tempfile.mkdtemp(prefix="lo-profile-"))
@@ -264,6 +322,7 @@ def build_all(out: Path) -> dict[str, Path]:
         "defective_docx": build_defective_report(out / "defective_report.docx"),
         "clean_pptx": build_clean_deck(out / "clean_deck.pptx"),
         "overflow_pptx": build_overflow_deck(out / "overflow_deck.pptx"),
+        "visual_docx": build_visual_defects(out / "visual_defects.docx"),
     }
     files["clean_pdf"] = to_pdf(files["clean_docx"], out)
     files["defective_pdf"] = to_pdf(files["defective_docx"], out)
