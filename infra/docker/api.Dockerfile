@@ -6,10 +6,19 @@
 FROM python:3.13-slim
 # LibreOffice renders DOCX/PPTX pages (Phase 2+). Metric-compatible and Noto fonts reduce
 # rendering differences from Microsoft Office (ARCHITECTURE.md §10 R3, R14).
-RUN apt-get update \
- && apt-get install -y --no-install-recommends libreoffice-writer-nogui libreoffice-impress-nogui \
+# With an extra CA (TLS-inspecting proxy, usually HTTPS-only), apt uses the HTTPS mirrors and
+# trusts that CA for this step only; the certificate is never written to a layer.
+RUN --mount=type=secret,id=extra_ca,required=false \
+    APT_OPTS=""; \
+    if [ -s /run/secrets/extra_ca ]; then \
+      cat /etc/ssl/certs/ca-certificates.crt /run/secrets/extra_ca > /tmp/apt-ca.pem; \
+      sed -i 's#http://deb.debian.org#https://deb.debian.org#g' /etc/apt/sources.list.d/debian.sources; \
+      APT_OPTS="-o Acquire::https::CAInfo=/tmp/apt-ca.pem"; \
+    fi; \
+    apt-get $APT_OPTS update \
+ && apt-get $APT_OPTS install -y --no-install-recommends libreoffice-writer-nogui libreoffice-impress-nogui \
       fonts-liberation fonts-crosextra-carlito fonts-crosextra-caladea fonts-noto-core \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* /tmp/apt-ca.pem
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
 WORKDIR /app
 

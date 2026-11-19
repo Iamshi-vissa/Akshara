@@ -1066,6 +1066,10 @@ Each phase ends with a runnable application, green CI, and a completion report t
 
   **Differences from the plan:** results are stored as an inspection run of kind `references` (per-reference results in its stats, problems as findings) instead of a `references` table; no BibTeX/RIS import or standalone reference manager. A small built-in formatter replaces citeproc-py (three styles, no extra dependency). Rule extraction is deterministic pattern matching only; LLM extraction, guideline chunking/pgvector (RAG), sample-document inference and the `/research/search` endpoint are deferred (§9.10).
 
+### 9.9 Production images (verified 2026-11-19)
+
+Images rebuilt from `infra/docker` and run with `docker compose` (db, redis, LanguageTool, api, worker, nginx web). Ready check: database, Redis and storage OK. `e2e/phase7.e2e.mjs` and `e2e/phase8.e2e.mjs` passed against `http://localhost:8080`, so LibreOffice rendering, slide generation and visual checks run inside the worker image. In that sandbox the containers had no route to the internet, and a reference check correctly returned "lookup failed" for all six entries with no findings and nothing marked verified. Phase 9 against the live registries was verified with the dev stack (`e2e/phase9.e2e.mjs`). Fixed while building: the API image's apt step now works behind an HTTPS-only TLS-inspecting proxy (HTTPS mirrors plus the optional build CA for that step only).
+
 ### 9.10 Deferred (not built, and not claimed)
 
 - **RAG over guidelines** (chunking + pgvector) and **LLM-based rule extraction**: extraction is deterministic and grounded; a model-based extractor would need the same quote verification (§8.5) and an evaluation set before it is worth shipping.
