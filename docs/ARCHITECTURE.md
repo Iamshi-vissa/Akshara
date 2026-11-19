@@ -2,7 +2,7 @@
 
 > **Intelligence Behind Every Document.**
 >
-> Status: **v0.2 — plan approved. Phase 1 complete and verified (2026-11-07). Phases 2–9 not started.**
+> Status: **v1.0 — all nine phases implemented and verified (Phase 1: 2026-11-07; Phases 2–9: 2026-11-19).** Each phase section in §9 lists what was verified and where the build deliberately differs from the plan. Items deferred are listed in §9.10.
 
 ---
 
@@ -669,6 +669,8 @@ AI edit `operation` values: `grammar`, `spelling`, `restructure`, `paraphrase`, 
 | POST | `/presentations` | `{brief \| source_document_id, theme, slide_count, audience}` → `202 job` |
 | GET | `/presentation-themes` | |
 
+*As built:* generation lives under `/generation/drafts` (`GET /generation/kinds`, `POST/GET/PATCH /generation/drafts[/{id}]`, `…/outline`, `…/sections/{sid}/generate`, `…/finalize`). Presentations: `POST /presentations` `{source: document|outline|brief, version_id?, outline?, brief?, audience?, slide_count, theme, title?}` → `202 job` whose result names the new document; themes at `GET /presentations/themes`. The live OpenAPI document (`/api/docs`) is authoritative.
+
 ### Export
 | POST | `/versions/{vid}/exports` `{format: docx\|pdf\|pptx}` → `202 job` · GET `/exports/{id}/file` |
 |---|---|
@@ -681,6 +683,12 @@ AI edit `operation` values: `grammar`, `spelling`, `restructure`, `paraphrase`, 
 | POST | `/versions/{vid}/references/check` | extract + consistency + verification report |
 | POST | `/research/search` | `{query, filters}` → results labelled `suggested` |
 | POST | `/references/format` | `{reference_ids[], style}` → formatted strings (CSL) |
+
+*As built (Phase 9):* `POST /versions/{vid}/references/verify` `{style?}` → `202 job`; results via
+`GET /versions/{vid}/inspections/latest?kind=references` (per-reference results in `stats.items`,
+problems as findings); corrections via `POST /documents/{id}/changesets` (`source: manual`).
+`POST /standards/extract` (multipart file or text) → grounded candidate rules for review. The other
+endpoints above are deferred (§9.10).
 
 ### System
 `GET /health` (liveness) · `GET /ready` (DB, Redis, storage, LibreOffice, LanguageTool and LLM status, each reported separately) · `GET /capabilities` (which optional features are configured; the UI uses it to hide or disable features honestly).
@@ -984,7 +992,9 @@ Each phase ends with a runnable application, green CI, and a completion report t
 - **Dependencies:** python-docx, python-pptx, PyMuPDF, lxml; LibreOffice and Noto fonts in the worker image.
 - **Testing:** golden tests: each fixture → expected ADM snapshot (outline, counts, key formatting); round-trip property tests (parse → serialise → parse is stable); render smoke tests; a corpus of real-world samples for crash resistance (no exception on any file).
 - **Acceptance:** an uploaded file shows a structure tree and page previews; ADM is downloadable; fidelity flags are correct for PDF-inferred properties; parse failures produce a clear job error, not a crash.
-- **Status:** Not started.
+- **Status: ✅ Complete.** 89 backend tests at the time. Importers for all three formats; sandboxed LibreOffice rendering; page/slide viewer with structure navigator.
+
+  **Differences from the plan:** job runner is generic (`services/jobs`) rather than per-task Celery modules — Celery in dev/prod, inline in tests (`AKSHARA_JOB_MODE`). Fixtures are built programmatically (`tests/fixtures/builders.py`) with known properties instead of a YAML manifest. Golden ADM snapshots were replaced by targeted assertions on outlines, counts and formatting; no real-world crash corpus yet.
 
 ### PHASE 3 — Inspection engine
 - **Objective:** structural and formatting inspection with severity-classified findings and a quality report.
@@ -992,7 +1002,9 @@ Each phase ends with a runnable application, green CI, and a completion report t
 - **Checks (initial set):** heading hierarchy skips, inconsistent heading formatting per level, numbering gaps/duplicates (headings, figures, tables, equations), missing captions, figures/tables never referenced, font inconsistencies in body text (outlier detection against the dominant style), spacing inconsistencies, margin inconsistencies across sections, empty paragraphs/pages, broken tables (ragged rows, zero-width columns), page numbering missing/discontinuous, metadata missing (title/author), empty headers/footers.
 - **Testing:** each fixture in `manifest.yaml` must produce exactly its expected findings (precision and recall measured on the fixture set); clean documents must produce no findings above `low`.
 - **Acceptance:** 100% of manifest-declared violations detected on fixtures; zero false positives of `high`/`critical` on the clean fixtures; every finding has a location, explanation and recommendation.
-- **Status:** Not started.
+- **Status: ✅ Complete.** The defective fixture yields exactly its 14 planted defects (`KNOWN_DEFECTS`) for DOCX and the PDF-visible subset for PDF; clean fixtures have nothing above `low`. 101 backend tests at the time.
+
+  **Differences from the plan:** checks that cannot run are reported as *not evaluated* (never counted as passing). PDF findings carry 0.7 confidence because structure is inferred.
 
 ### PHASE 4 — UDSE
 - **Objective:** standard profiles, machine-readable rules, deterministic validation and compliance reports.
@@ -1000,7 +1012,9 @@ Each phase ends with a runnable application, green CI, and a completion report t
 - **Implementation details:** rule JSON Schema (published at `/udse/rule-schema`), selector engine, operator library, unit normalisation and tolerance, inheritance (`extends` + override by rule ID), hard/soft separation, the scoring cap, rule-level `not_evaluated`. Built-in IEEE/APA/MLA profiles are written from official sources, and every rule has a citation (reviewed before merge). Basic pattern-based rule extraction from guidelines (the full builder comes in Phase 9).
 - **Testing:** an operator unit test for every operator (pass, fail, boundary, tolerance, unit conversion); one fixture per built-in standard with known violations; property test: validation is deterministic (same input gives the same output and the same hash).
 - **Acceptance:** validating a fixture against IEEE/APA/MLA reproduces the expected rule results exactly; editing a custom standard and re-validating reflects the change; no rule without provenance can be published in a built-in profile.
-- **Status:** Not started.
+- **Status: ✅ Complete.** 17 deterministic operators; compliance capped at 69 when any hard rule fails; custom standards with `extends`, publish (immutable) and new drafts. 117 backend tests at the time.
+
+  **Differences from the plan:** built-in profiles are JSON (not YAML). Their provenance is marked `secondary`/`unverified` because the official APA/MLA/IEEE sites were not reachable from the build environment — they must be checked against the official guides before being presented as authoritative.
 
 ### PHASE 5 — Editing & correction
 - **Objective:** tracked AI and grammar editing, and approval-gated auto-correction with revalidation.
@@ -1008,7 +1022,9 @@ Each phase ends with a runnable application, green CI, and a completion report t
 - **Implementation details:** fixers for formatting, heading, numbering, spacing, font, margin, caption and reference format; DOCX/PPTX patchers that edit the OOXML of the original (preferring style-level changes); stale-base detection (`409`); LanguageTool integration; LLM edit operations with structured output; meaning-preservation warning; apply → new version → re-render → revalidate → diff of the compliance report (before/after).
 - **Testing:** fixture → validate → accept all auto-fixes → apply → revalidate: the targeted violations are gone and **no new violations appear**; the patched DOCX opens in LibreOffice and python-docx; the original blob is unchanged (hash check); rejected proposals aren't applied; LLM adapter tested against a recorded-response stub (tests only, never production), plus an opt-in live test.
 - **Acceptance:** the full approve → apply → revalidate loop works end to end for DOCX and PPTX; PDF shows report-only with the "Rebuild as DOCX" option; nothing changes without explicit acceptance.
-- **Status:** Not started.
+- **Status: ✅ Complete.** Approve → apply → re-analyse → re-inspect → re-validate works for DOCX and PPTX; PDFs are report-only. LanguageTool grammar verified against a real server; Claude provider via the official SDK, off unless configured *and* the user opts in. 134 backend tests at the time.
+
+  **Differences from the plan:** paragraph editing uses plain text areas, not TipTap. `scripts/verify.sh` was added after a commit slipped through with a failing test (see commit 2f2773e); since then every commit is made only after it passes.
 
 ### PHASE 6 — Document generation
 - **Objective:** generate the ten document types from a brief, with an editable outline, section-by-section generation and DOCX/PDF export.
@@ -1016,7 +1032,9 @@ Each phase ends with a runnable application, green CI, and a completion report t
 - **Implementation details:** word-count control per section; tone and style parameters; citations only from the user's `references` (otherwise a visible placeholder); generated output is a new document, validated against the selected standard right away; generated nodes marked as such in the UI.
 - **Testing:** schema validation of the generated ADM; exported files open and re-import to an equivalent ADM; word targets within ±10%; a test that **no citation is emitted without a backing reference record**.
 - **Acceptance:** each document type can be produced end to end and exported; the generated document passes structural inspection with no critical findings.
-- **Status:** Not started.
+- **Status: ✅ Complete.** Ten document types; outline-first; works without a model; citation guard turns any citation not backed by a user-supplied reference into "[citation needed]"; an APA-styled generated draft validates 100/100. 142 backend tests at the time.
+
+  **Differences from the plan:** PDF export is DOCX → LibreOffice → PDF (one renderer, consistent with previews); no ReportLab.
 
 ### PHASE 7 — Presentation engine
 - **Objective:** PPTX generation with themes, layouts, speaker notes, slide numbers and validation.
@@ -1024,7 +1042,9 @@ Each phase ends with a runnable application, green CI, and a completion report t
 - **Implementation details:** outline → slide plan (layout per slide) → content fitting (character budgets per placeholder estimated from font metrics, then verified by render) → PPTX → render → slide checks (overflow, clipping, alignment, typography consistency, density/balance) → automatic re-fit proposals.
 - **Testing:** generated decks render with zero overflow findings on the standard test briefs; fixtures with deliberate overflow are detected.
 - **Acceptance:** decks open in LibreOffice/PowerPoint, theme is consistent, notes and numbering present, validation report shown.
-- **Status:** Not started.
+- **Status: ✅ Complete — verified 2026-11-19.** Sources: document (deterministic), typed outline, or AI brief (model + consent). Fitting picks a font from 28/24/22/20 pt down to an 18 pt minimum, at most six bullets; overflow moves to "(cont.)" slides and nothing is dropped. Every slide has a real title placeholder, a slide-number field and speaker notes; four themes. Generated decks re-imported and inspected produce no slide findings. Unit + integration tests (outline, document, brief with a stub model, validation, privacy); `e2e/phase7.e2e.mjs` under Celery.
+
+  **Differences from the plan:** themes are data in `pptx_exporter.py` rather than master `.pptx` templates. Fitting happens before export (character budgets from font metrics), and the result is then inspected by the normal slide + visual checks; there is no separate automatic re-fit loop.
 
 ### PHASE 8 — Visual quality engine
 - **Objective:** render-based defect detection for all formats, with page- and slide-specific reports.
@@ -1032,7 +1052,9 @@ Each phase ends with a runnable application, green CI, and a completion report t
 - **Implementation details:** deterministic geometry first (bbox beyond page/margins, text in ADM missing from rendered text → clipping, blank pages by pixel variance, table width vs. text block, image placement vs. columns, widow/orphan heuristics, alignment deviation clustering). An optional vision-model pass for composition and hierarchy is labelled "model-assessed" and kept out of hard scores.
 - **Testing:** fixtures with known visual defects (overflowing table, blank page, off-margin image, clipped text box); measure precision and recall.
 - **Acceptance:** all fixture visual defects detected with correct page/slide and bbox; no high-severity false positives on clean fixtures.
-- **Status:** Not started.
+- **Status: ✅ Complete — verified 2026-11-19.** The renderer now also records each text run's colour, the background sampled from the page image, and individual drawing rectangles. Checks (`domain/inspection/checks/visual.py`): content off the page, margin intrusion (exact margins for DOCX, inferred for PDF at 0.7 confidence), blank pages (including pages holding only a header/footer), nearly empty pages, overlapping text, low contrast (WCAG AA) and alignment off the text edge. Each finding carries every offending box, drawn by the Visual tab on the page image. The visual-defects fixture yields exactly `VISUAL_DEFECTS` for DOCX and PDF; clean fixtures and generated decks produce none.
+
+  **Differences from the plan:** visual checks live in the inspection engine (same findings, scoring and dismiss flow) instead of a separate `services/visual`. Contrast checking was added. Not built: "ADM text missing from the render → clipping", widow/orphan detection beyond nearly-empty pages, and the optional vision-model pass. Layouts rendered before Phase 8 lack colour data; contrast reports *not evaluated* until the document is re-analysed.
 
 ### PHASE 9 — Research & advanced AI
 - **Objective:** source discovery, reference verification, RAG over guidelines, the full Custom Standard Builder.
@@ -1040,7 +1062,17 @@ Each phase ends with a runnable application, green CI, and a completion report t
 - **Implementation details:** DOI resolution and metadata matching (title similarity, authors, year) → `verified`/`mismatch`/`not_found`; URL checks with SSRF protection (block private IPs, limit redirects); CSL formatting (citeproc-py); search through OpenAlex/Crossref (results stay `suggested`); guideline chunking + pgvector; LLM extraction with quote verification (§8.5); sample-document inference.
 - **Testing:** recorded HTTP fixtures for Crossref/OpenAlex; a fabricated DOI → `not_found`; a real DOI with a wrong year → `mismatch`; an extraction test where the model returns a quote not in the source → rejected from auto-accept.
 - **Acceptance:** no reference is shown as verified without a stored matching record; the builder produces a usable standard from a sample guideline after human review.
-- **Status:** Not started.
+- **Status: ✅ Complete — verified 2026-11-19** (see ADR 0006). Reference verification: entries are read as written; DOIs are looked up in Crossref then OpenAlex and compared on title, year and first author → `verified` / `mismatch` / `not_found`; entries without a DOI are searched by title and author, and a hit is offered only as a `possible_match` the user confirms (title, first author and year must all agree); otherwise `unverified`. Cited links are checked with SSRF protection. Corrections are formatted (APA 7, IEEE, MLA 9) from registry fields only and applied through the approval-gated change flow. Custom Standard Builder: guideline upload (DOCX/PDF through the upload safety gate, or text; not stored) → candidate rules each with its verbatim quote and number check → review queue → draft standard. Tests replay responses recorded from the real services; an opt-in live test (`AKSHARA_TEST_NETWORK=1`) and `e2e/phase9.e2e.mjs` ran against the live registries. Recording exposed and fixed a false match (a chapter titled "Notes" matched an invented reference).
+
+  **Differences from the plan:** results are stored as an inspection run of kind `references` (per-reference results in its stats, problems as findings) instead of a `references` table; no BibTeX/RIS import or standalone reference manager. A small built-in formatter replaces citeproc-py (three styles, no extra dependency). Rule extraction is deterministic pattern matching only; LLM extraction, guideline chunking/pgvector (RAG), sample-document inference and the `/research/search` endpoint are deferred (§9.10).
+
+### 9.10 Deferred (not built, and not claimed)
+
+- **RAG over guidelines** (chunking + pgvector) and **LLM-based rule extraction**: extraction is deterministic and grounded; a model-based extractor would need the same quote verification (§8.5) and an evaluation set before it is worth shipping.
+- **Source discovery** (`/research/search`), BibTeX/RIS import, a standalone reference library.
+- **Vision-model visual assessment**; "text missing from render" clipping detection.
+- **S3 storage adapter** (only local storage behind the `BlobStorage` interface).
+- CI workflow exists but has not run on GitHub Actions yet.
 
 ---
 
@@ -1059,11 +1091,11 @@ Each phase ends with a runnable application, green CI, and a completion report t
 | R9 | **Standards are copyrighted or ambiguous, or change over time.** | Wrong built-in rules. | Rules cite sources and the version date; profiles versioned; "verify against your venue" notice; easy institutional overrides via `extends`. |
 | R10 | **Scope size** (9 modules). | Never-finished platform. | Strict phase gates; every phase shippable; fixtures as acceptance tests; features hidden via `/capabilities` until real. |
 | R11 | **Concurrent edits / stale ChangeSets.** | Lost or misapplied changes. | `base_version_id` + `409` on stale apply; `replace_text` ops carry a `before` guard; optimistic locking on document `current_version_id`. |
-| R12 | **External API limits** (Crossref/OpenAlex rate limits, outages). | Verification incomplete. | Polite-pool headers with a configurable contact, caching, backoff; failures yield `error`/`unverified`, never `verified`. |
+| R12 | **External API limits** (Crossref/OpenAlex rate limits, outages). | Verification incomplete. | Generic client name (no user data), bounded concurrency, Retry-After backoff on 429/503; failures yield `error` ("nothing concluded"), never `verified`. Can be switched off (`AKSHARA_REFERENCE_LOOKUPS=false`). |
 | R13 | **Mapping rendered layout back to ADM nodes is imprecise.** | Highlights in the wrong place. | Fuzzy text alignment with confidence; fall back to page-level location when confidence is low. |
 | R14 | **Indic/complex scripts** (shaping, LanguageTool coverage). | Wrong measurements, missing grammar. | Noto fonts with HarfBuzz-based rendering in LibreOffice; per-run `lang`; explicit "language not supported" result. |
 | R15 | **Cost and latency of LLM calls.** | Expensive, slow. | LLM used only for semantic tasks; section-scoped prompts; caching by prompt hash; token accounting in `llm_calls`; per-user quotas. |
 
 ---
 
-**Next step:** review the decisions in §0 and the plan in §9. Once you approve, or tell me what to change, I'll start **Phase 1 — Foundation**.
+**Status:** all phases implemented; see §9 for verification evidence and §9.10 for what remains.

@@ -12,3 +12,13 @@ node e2e/phase1.e2e.mjs path/to/samples [path/to/screenshots]
 The samples folder needs `Research_Report.docx`, `Methodology_Paper.pdf`,
 `Quarterly_Review.pptx` and `Thesis.docm` (any DOCX renamed). Set `AKSHARA_WEB_URL` to test
 the Docker stack (`http://localhost:8080`); the default is the Vite dev server.
+
+## Later phases
+
+| Script | Checks | Input |
+|---|---|---|
+| `phase7.e2e.mjs [shots]` | outline → themed deck → analysed document | none |
+| `phase8.e2e.mjs <visual_defects.docx> [shots]` | Visual tab lists the planted defects and draws them | built by `tests/fixtures/builders.py` |
+| `phase9.e2e.mjs <reference_checks.docx> [shots]` | reference statuses against the **live** Crossref/OpenAlex, correction proposal, standard built from guideline text | built by `tests/fixtures/builders.py` |
+
+Build the fixture files with `(cd backend && uv run python -m tests.fixtures.builders <dir>)`.
