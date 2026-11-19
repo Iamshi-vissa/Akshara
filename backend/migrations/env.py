@@ -16,7 +16,9 @@ def _url() -> str:
     url = os.environ.get("AKSHARA_DATABASE_URL")
     if not url:
         raise RuntimeError("AKSHARA_DATABASE_URL is not set")
-    return url
+    from app.core.config import async_database_url
+
+    return async_database_url(url)
 
 
 def run_migrations_offline() -> None:

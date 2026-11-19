@@ -100,3 +100,11 @@ async def test_memory_rate_limiter() -> None:
     rl = MemoryRateLimiter()
     results = [await rl.hit("k", 3, 60) for _ in range(5)]
     assert results == [True, True, True, False, False]
+
+
+def test_provider_database_urls_get_the_async_driver() -> None:
+    from app.core.config import async_database_url
+
+    assert async_database_url("postgres://u:p@h:5432/d") == "postgresql+asyncpg://u:p@h:5432/d"
+    assert async_database_url("postgresql://u:p@h/d") == "postgresql+asyncpg://u:p@h/d"
+    assert async_database_url("postgresql+asyncpg://u@h/d") == "postgresql+asyncpg://u@h/d"

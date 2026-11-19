@@ -15,6 +15,14 @@ from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def async_database_url(url: str) -> str:
+    """Hosting providers hand out ``postgres://`` / ``postgresql://`` URLs; the app needs asyncpg."""
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            return "postgresql+asyncpg://" + url[len(prefix) :]
+    return url
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="AKSHARA_", env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
@@ -59,6 +67,11 @@ class Settings(BaseSettings):
     max_ooxml_uncompressed_bytes: int = 200 * 1024 * 1024
     max_ooxml_entries: int = 10_000
     max_compression_ratio: int = 100
+
+    @field_validator("database_url")
+    @classmethod
+    def _async_driver(cls, v: str) -> str:
+        return async_database_url(v)
 
     @field_validator("jwt_secret")
     @classmethod

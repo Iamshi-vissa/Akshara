@@ -23,6 +23,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_COMPILE_BYTECODE=1 UV_LINK_M
 WORKDIR /app
 
 COPY infra/docker/with-ca.sh /usr/local/bin/with-ca
+COPY infra/docker/start-all.sh /usr/local/bin/start-all
 RUN --mount=type=secret,id=extra_ca,required=false with-ca pip install --no-cache-dir "uv>=0.9,<0.10"
 
 COPY backend/pyproject.toml backend/uv.lock ./
