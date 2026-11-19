@@ -26,3 +26,6 @@ frontend/dist/
 
 # Redis snapshot written when redis-server runs from the repo root
 dump.rdb
+
+# Local CA bundle passed to docker builds behind a TLS-inspecting proxy
+infra/docker/.build-ca.pem
